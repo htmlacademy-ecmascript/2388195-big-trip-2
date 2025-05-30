@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Ирина Ильченко](https://up.htmlacademy.ru/ecmascript-individual/2/user/2388195).
-* Наставник: `Неизвестно`.
+* Наставник: `Alexey Koryakin`.
 
 ---
 
