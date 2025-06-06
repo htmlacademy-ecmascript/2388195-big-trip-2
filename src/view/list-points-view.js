@@ -1,7 +1,7 @@
 import {createElement} from '../render.js';
 
 function createListPoints() {
-  return '<ul class="trip-events__list">';
+  return '<ul class="trip-events__list"></ul>';
 }
 
 export default class ListPointsView {

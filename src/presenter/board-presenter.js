@@ -3,9 +3,9 @@ import FiltersView from '../view/filters-view.js';
 import SortingView from '../view/sorting-view.js';
 import ListPointsView from '../view/list-points-view.js';
 import EditingFormView from '../view/editing-form-view.js';
-import CreationFormView from '../view/creation-form-view.js';
 import PointView from '../view/point-view.js';
 import {RenderPosition, render} from '../render.js';
+import {Mode} from '../constants.js';
 
 export default class TripEventsPresenter {
   ListPointsView = new ListPointsView();
@@ -22,8 +22,7 @@ export default class TripEventsPresenter {
     render(new FiltersView(), filtersContainer);
     render(new SortingView(), this.tripEventsContainer);
     render(this.ListPointsView, this.tripEventsContainer);
-    render(new EditingFormView(), this.ListPointsView.getElement());
-    render(new CreationFormView(), this.ListPointsView.getElement());
+    render(new EditingFormView(Mode.EDIT), this.ListPointsView.getElement());
 
     for (let i = 0; i < 3; i++) {
       render(new PointView(), this.ListPointsView.getElement());
