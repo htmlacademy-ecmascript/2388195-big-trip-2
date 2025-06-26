@@ -5,7 +5,7 @@ import ListPointsView from '../view/list-points-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
 import {RenderPosition, render} from '../render.js';
-import {Mode, GET_DEFAULT_POINT} from '../const.js';
+import {Mode, DEFAULT_POINT} from '../const.js';
 
 export default class TripPresenter {
   listPointsView = new ListPointsView();
@@ -27,7 +27,7 @@ export default class TripPresenter {
     render(new FiltersView(), filtersContainer);
     render(new SortingView(), this.container);
     render(this.listPointsView, this.container);
-    render(new EditPointView(Mode.EDIT, GET_DEFAULT_POINT(), destinations, offers), this.listPointsView.getElement());
+    render(new EditPointView(Mode.EDIT, DEFAULT_POINT, destinations, offers), this.listPointsView.getElement());
     render(new EditPointView(Mode.CREATE, points[0], destinations, offers), this.listPointsView.getElement());
 
     for (const point of points) {
