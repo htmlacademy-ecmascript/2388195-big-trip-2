@@ -1,11 +1,14 @@
+import {offers} from '../src/mock/offers';
+
 export const Mode = {
   EDIT: 'edit',
   CREATE: 'create'
 };
 
-export const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+export const POINT_TYPES = offers.map((offer) => offer.type);
 
-export const GET_DEFAULT_POINT = () => ({
+export const DEFAULT_POINT = {
+  id: 0,
   basePrice: 0,
   dateFrom: new Date().toISOString(),
   dateTo: new Date().toISOString(),
@@ -13,7 +16,7 @@ export const GET_DEFAULT_POINT = () => ({
   isFavorite: false,
   offers: [],
   type: POINT_TYPES[0],
-});
+};
 
 export const DateFormat = {
   DATE_TIME: 'DD/MM/YY HH:mm',
