@@ -8,30 +8,32 @@ import {RenderPosition, render} from '../framework/render.js';
 import {Mode, DEFAULT_POINT} from '../const.js';
 
 export default class TripPresenter {
+  #container = null;
+  #pointModel = null;
+  #listPointsView = new ListPointsView();
 
   constructor({container, pointModel}) {
-    this.container = container;
-    this.pointModel = pointModel;
-    this.listPointsView = new ListPointsView();
+    this.#container = container;
+    this.#pointModel = pointModel;
   }
 
   init() {
     const tripMainContainer = document.querySelector('.trip-main');
     const filtersContainer = tripMainContainer.querySelector('.trip-controls__filters');
 
-    const points = [...this.pointModel.getPoints()];
-    const destinations = [...this.pointModel.getDestinations()];
-    const offers = [...this.pointModel.getOffers()];
+    const points = [...this.#pointModel.points];
+    const destinations = [...this.#pointModel.destinations];
+    const offers = [...this.#pointModel.offers];
 
     render(new TripInfoView(), tripMainContainer, RenderPosition.AFTERBEGIN);
     render(new FiltersView(), filtersContainer);
-    render(new SortingView(), this.container);
-    render(this.listPointsView, this.container);
-    render(new EditPointView(Mode.EDIT, DEFAULT_POINT, destinations, offers), this.listPointsView.element);
-    render(new EditPointView(Mode.CREATE, points[0], destinations, offers), this.listPointsView.element);
+    render(new SortingView(), this.#container);
+    render(this.#listPointsView, this.#container);
+    render(new EditPointView(Mode.EDIT, DEFAULT_POINT, destinations, offers), this.#listPointsView.element);
+    render(new EditPointView(Mode.CREATE, points[0], destinations, offers), this.#listPointsView.element);
 
     for (const point of points) {
-      render(new PointView(point, destinations, offers), this.listPointsView.element);
+      render(new PointView(point, destinations, offers), this.#listPointsView.element);
     }
   }
 }

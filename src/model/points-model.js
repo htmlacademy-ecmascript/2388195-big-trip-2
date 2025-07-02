@@ -3,27 +3,31 @@ import {destinations} from '../mock/destinations';
 import {offers} from '../mock/offers';
 
 export default class PointModel {
+  #points = [];
+  #destinations = [];
+  #offers = [];
+
   constructor() {
-    this.points = [];
-    this.destinations = [];
-    this.offers = [];
+    this.#points = [];
+    this.#destinations = [];
+    this.#offers = [];
   }
 
   init() {
-    this.points = points;
-    this.destinations = destinations;
-    this.offers = offers;
+    this.#points = points;
+    this.#destinations = destinations;
+    this.#offers = offers;
   }
 
-  getPoints() {
-    return this.points;
+  get points() {
+    return this.#points;
   }
 
-  getDestinations() {
-    return this.destinations;
+  get destinations() {
+    return this.#destinations;
   }
 
-  getOffers() {
-    return this.offers;
+  get offers() {
+    return this.#offers;
   }
 }
