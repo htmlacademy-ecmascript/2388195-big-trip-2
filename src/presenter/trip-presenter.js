@@ -4,8 +4,9 @@ import SortingView from '../view/sorting-view.js';
 import ListPointsView from '../view/list-points-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
-import {RenderPosition, render} from '../framework/render.js';
-import {Mode, DEFAULT_POINT} from '../const.js';
+import {RenderPosition, render, replace} from '../framework/render.js';
+// import {Mode, DEFAULT_POINT} from '../const.js';
+import {Mode} from '../const.js';
 
 export default class TripPresenter {
   #container = null;
@@ -22,19 +23,65 @@ export default class TripPresenter {
   }
 
   init() {
-    const tripMainContainer = document.querySelector('.trip-main');
-    const filtersContainer = tripMainContainer.querySelector('.trip-controls__filters');
-
     this.#points = [...this.#pointModel.points];
     this.#destinations = [...this.#pointModel.destinations];
     this.#offers = [...this.#pointModel.offers];
+
+    this.#renderBoard();
+  }
+
+  #renderPointView(point, destinations, offers) {
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceFormToCard();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
+    const pointViewComponent = new PointView({
+      point,
+      destinations,
+      offers,
+      onEditClick: () => {
+        replaceCardToForm();
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    const editPointViewComponent = new EditPointView({
+      mode: Mode.Edit,
+      point,
+      destinations,
+      offers,
+      onFormSubmit: () => {
+        replaceFormToCard();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    function replaceCardToForm() {
+      replace(editPointViewComponent, pointViewComponent);
+    }
+
+    function replaceFormToCard() {
+      replace(pointViewComponent, editPointViewComponent);
+    }
+
+
+    render(pointViewComponent, this.#listPointsView.element);
+  }
+
+  #renderBoard() {
+    const tripMainContainer = document.querySelector('.trip-main');
+    const filtersContainer = tripMainContainer.querySelector('.trip-controls__filters');
 
     render(new TripInfoView(), tripMainContainer, RenderPosition.AFTERBEGIN);
     render(new FiltersView(), filtersContainer);
     render(new SortingView(), this.#container);
     render(this.#listPointsView, this.#container);
-    render(new EditPointView(Mode.EDIT, DEFAULT_POINT, this.#destinations, this.#offers), this.#listPointsView.element);
-    render(new EditPointView(Mode.CREATE, this.#points[0], this.#destinations, this.#offers), this.#listPointsView.element);
+    // render(new EditPointView(Mode.EDIT, DEFAULT_POINT, this.#destinations, this.#offers), this.#listPointsView.element);
+    // render(new EditPointView(Mode.CREATE, this.#points[0], this.#destinations, this.#offers), this.#listPointsView.element);
 
     // for (const point of points) {
     //   render(new PointView(point, destinations, offers), this.#listPointsView.element);
@@ -46,11 +93,5 @@ export default class TripPresenter {
     for (let i = 0; i < this.#points.length; i++) {
       this.#renderPointView(this.#points[i], this.#destinations, this.#offers);
     }
-
-  }
-
-  #renderPointView(point, destinations, offers) {
-    const pointView = new PointView(point, destinations, offers);
-    render(pointView, this.#listPointsView.element);
   }
 }
