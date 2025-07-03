@@ -4,8 +4,8 @@ import SortingView from '../view/sorting-view.js';
 import ListPointsView from '../view/list-points-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
+import NoPointView from '../view/no-point-view.js';
 import {RenderPosition, render, replace} from '../framework/render.js';
-// import {Mode, DEFAULT_POINT} from '../const.js';
 import {Mode} from '../const.js';
 
 export default class TripPresenter {
@@ -68,16 +68,20 @@ export default class TripPresenter {
       replace(pointViewComponent, editPointViewComponent);
     }
 
-
     render(pointViewComponent, this.#listPointsView.element);
   }
 
   #renderBoard() {
     const tripMainContainer = document.querySelector('.trip-main');
     const filtersContainer = tripMainContainer.querySelector('.trip-controls__filters');
+    render(new FiltersView(), filtersContainer);
+
+    if (this.#points.length === 0) {
+      render(new NoPointView(), this.#container);
+      return;
+    }
 
     render(new TripInfoView(), tripMainContainer, RenderPosition.AFTERBEGIN);
-    render(new FiltersView(), filtersContainer);
     render(new SortingView(), this.#container);
     render(this.#listPointsView, this.#container);
     // render(new EditPointView(Mode.EDIT, DEFAULT_POINT, this.#destinations, this.#offers), this.#listPointsView.element);
