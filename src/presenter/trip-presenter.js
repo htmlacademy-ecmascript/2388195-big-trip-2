@@ -7,6 +7,7 @@ import PointView from '../view/point-view.js';
 import NoPointView from '../view/no-point-view.js';
 import {RenderPosition, render, replace} from '../framework/render.js';
 import {Mode} from '../const.js';
+import {generateFilter} from '../mock/filter.js';
 
 export default class TripPresenter {
   #container = null;
@@ -74,7 +75,9 @@ export default class TripPresenter {
   #renderBoard() {
     const tripMainContainer = document.querySelector('.trip-main');
     const filtersContainer = tripMainContainer.querySelector('.trip-controls__filters');
-    render(new FiltersView(), filtersContainer);
+    const filters = generateFilter(this.#points);
+    render(new FiltersView({filters}), filtersContainer);
+    // render(new FiltersView(), filtersContainer);
 
     if (this.#points.length === 0) {
       render(new NoPointView(), this.#container);
@@ -84,6 +87,8 @@ export default class TripPresenter {
     render(new TripInfoView(), tripMainContainer, RenderPosition.AFTERBEGIN);
     render(new SortingView(), this.#container);
     render(this.#listPointsView, this.#container);
+
+    //Эти комментарии удалю попозже:
     // render(new EditPointView(Mode.EDIT, DEFAULT_POINT, this.#destinations, this.#offers), this.#listPointsView.element);
     // render(new EditPointView(Mode.CREATE, this.#points[0], this.#destinations, this.#offers), this.#listPointsView.element);
 

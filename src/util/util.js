@@ -21,4 +21,12 @@ function getDuration(dateFrom, dateTo) {
   }
 }
 
-export {humanizeDate, getDuration};
+function isPointExpired(dueDate) {
+  return dueDate && dayjs().isAfter(dueDate, 'D');
+}
+
+function isPointExpiringToday(dueDate) {
+  return dueDate && dayjs(dueDate).isSame(dayjs(), 'D');
+}
+
+export {humanizeDate, getDuration, isPointExpired, isPointExpiringToday};

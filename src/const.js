@@ -25,3 +25,10 @@ export const DateFormat = {
   TIME: 'HH:mm',
   STANDART: 'YYYY-MM-DDTHH:mm',
 };
+
+export const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
