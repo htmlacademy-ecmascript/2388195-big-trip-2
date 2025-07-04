@@ -1,18 +1,18 @@
-import {createElement} from '../render.js';
-import {Mode, POINT_TYPES, GET_DEFAULT_POINT, DateFormat} from '../const.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import {Mode, POINT_TYPES, DEFAULT_POINT, DateFormat} from '../const.js';
 import {humanizeDate} from '../util/util.js';
 
 const upFirstLetter = (word) => `${word[0].toUpperCase()}${word.slice(1)}`;
 const formatOfferTitle = (title) => title.split(' ').join('-').toLowerCase();
 
 
-function createPointEdit(mode, point = GET_DEFAULT_POINT(), destinations, offers) {
+function createPointEdit(mode, point, destinations, offers) {
   const {basePrice, dateFrom, dateTo, type} = point;
   const offersInOffers = offers.find((offer) => offer.type === point.type).offers;
   const pointOffersInOffers = offersInOffers.filter((offerInOffers) => point.offers.includes(offerInOffers.id));
   const pointDestination = destinations.find((destination) => destination.id === point.destination);
   const {name, description, pictures} = pointDestination || {}; //пустой объект для того чтобы получить данные по деструктуризации
-  const pointId = point.id || 0; //0 если undefined
+  const pointId = point.id;
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -41,7 +41,7 @@ function createPointEdit(mode, point = GET_DEFAULT_POINT(), destinations, offers
           <label class="event__label  event__type-output" for="event-destination-${pointId}">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination" value="${name || ''}" list="destination-list-${pointId}">
+          <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination" value="${pointDestination ? name : ''}" list="destination-list-${pointId}">
           <datalist id="destination-list-${pointId}">
             ${destinations.map((destination) => `<option value="${destination.name}"></option>`).join('')}
           </datalist>
@@ -111,29 +111,33 @@ function createPointEdit(mode, point = GET_DEFAULT_POINT(), destinations, offers
   </li>`;
 }
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
+  #point = null;
+  #destinations = null;
+  #offers = null;
+  #handleFormSubmit = null;
 
-  constructor(mode = Mode.EDIT, point = GET_DEFAULT_POINT(), destinations, offers) {
+  constructor({mode = Mode.EDIT, point = DEFAULT_POINT, destinations, offers, onFormSubmit}) {
+    super();
     this.mode = mode;
-    this.point = point;
-    this.destinations = destinations;
-    this.offers = offers;
+    this.#point = point;
+    this.#destinations = destinations;
+    this.#offers = offers;
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#formSubmitHandler);
   }
 
-  getTemplate() {
-    return createPointEdit(this.mode, this.point, this.destinations, this.offers);
+  get template() {
+    return createPointEdit(this.mode, this.#point, this.#destinations, this.#offers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }
