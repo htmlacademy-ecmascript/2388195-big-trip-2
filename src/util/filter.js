@@ -8,4 +8,13 @@ const filter = {
   [FilterType.PAST]: (points) => points.filter((point) => isPointExpired(point.dateFrom)),
 };
 
-export {filter};
+function generateFilter(points) {
+  return Object.entries(filter).map(
+    ([filterType, filterPoints]) => ({
+      type: filterType,
+      count: filterPoints(points).length,
+    }),
+  );
+}
+
+export {generateFilter};

@@ -1,4 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
+
 import {humanizeDate, getDuration} from '../util/util.js';
 import {DateFormat} from '../const.js';
 

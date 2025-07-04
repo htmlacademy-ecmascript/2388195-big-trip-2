@@ -7,7 +7,7 @@ import PointView from '../view/point-view.js';
 import NoPointView from '../view/no-point-view.js';
 import {RenderPosition, render, replace} from '../framework/render.js';
 import {Mode} from '../const.js';
-import {generateFilter} from '../mock/filter.js';
+import {generateFilter} from '../util/filter.js';
 
 export default class TripPresenter {
   #container = null;
@@ -77,7 +77,6 @@ export default class TripPresenter {
     const filtersContainer = tripMainContainer.querySelector('.trip-controls__filters');
     const filters = generateFilter(this.#points);
     render(new FiltersView({filters}), filtersContainer);
-    // render(new FiltersView(), filtersContainer);
 
     if (this.#points.length === 0) {
       render(new NoPointView(), this.#container);
