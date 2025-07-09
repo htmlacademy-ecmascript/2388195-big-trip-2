@@ -2,12 +2,10 @@ import TripInfoView from '../view/trip-info-view.js';
 import FiltersView from '../view/filters-view.js';
 import SortingView from '../view/sorting-view.js';
 import ListPointsView from '../view/list-points-view.js';
-import EditPointView from '../view/edit-point-view.js';
-import PointView from '../view/point-view.js';
+import {RenderPosition, render} from '../framework/render.js';
 import NoPointView from '../view/no-point-view.js';
-import {RenderPosition, render, replace} from '../framework/render.js';
-import {Mode} from '../const.js';
 import {generateFilter} from '../util/filter.js';
+import PointPresenter from '../presenter/point-presenter.js';
 
 export default class TripPresenter {
   #container = null;
@@ -51,44 +49,10 @@ export default class TripPresenter {
   }
 
   #renderPointView(point, destinations, offers) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const pointViewComponent = new PointView({
-      point,
-      destinations,
-      offers,
-      onEditClick: () => {
-        replaceCardToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+    const pointPresenter = new PointPresenter({
+      listPointsViewContainer: this.#listPointsView.element,
     });
-
-    const editPointViewComponent = new EditPointView({
-      mode: Mode.Edit,
-      point,
-      destinations,
-      offers,
-      onFormSubmit: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    });
-
-    function replaceCardToForm() {
-      replace(editPointViewComponent, pointViewComponent);
-    }
-
-    function replaceFormToCard() {
-      replace(pointViewComponent, editPointViewComponent);
-    }
-
-    render(pointViewComponent, this.#listPointsView.element);
+    pointPresenter.init(point, destinations, offers);
   }
 
   #renderNoPointView() {
