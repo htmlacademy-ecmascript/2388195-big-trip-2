@@ -13,6 +13,9 @@ export default class TripPresenter {
   #container = null;
   #pointModel = null;
   #listPointsView = new ListPointsView();
+  #tripInfoView = new TripInfoView();
+  #noPointView = new NoPointView();
+  #sortingView = new SortingView();
 
   #points = [];
   #destinations = [];
@@ -29,6 +32,22 @@ export default class TripPresenter {
     this.#offers = [...this.#pointModel.offers];
 
     this.#renderBoard();
+  }
+
+  #renderTripInfoView() {
+    const tripMainContainer = document.querySelector('.trip-main');
+    render(this.#tripInfoView, tripMainContainer, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderFiltersView() {
+    const filtersContainer = document.querySelector('.trip-controls__filters');
+    const filters = generateFilter(this.#points);
+    render(new FiltersView({filters}), filtersContainer);
+  }
+
+  #renderSort() {
+    // render(new SortingView(), this.#container); //почему вот это нужно заменить на то что строкой ниже?
+    render(this.#sortingView, this.#container);
   }
 
   #renderPointView(point, destinations, offers) {
@@ -72,19 +91,19 @@ export default class TripPresenter {
     render(pointViewComponent, this.#listPointsView.element);
   }
 
-  #renderBoard() {
-    const tripMainContainer = document.querySelector('.trip-main');
-    const filtersContainer = tripMainContainer.querySelector('.trip-controls__filters');
-    const filters = generateFilter(this.#points);
-    render(new FiltersView({filters}), filtersContainer);
+  #renderNoPointView() {
+    render(this.#noPointView, this.#container);
+  }
 
+  #renderBoard() {
     if (this.#points.length === 0) {
-      render(new NoPointView(), this.#container);
+      this.#renderNoPointView();
       return;
     }
 
-    render(new TripInfoView(), tripMainContainer, RenderPosition.AFTERBEGIN);
-    render(new SortingView(), this.#container);
+    this.#renderTripInfoView();
+    this.#renderFiltersView();
+    this.#renderSort();
     render(this.#listPointsView, this.#container);
 
     //Эти комментарии удалю попозже:
