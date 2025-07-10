@@ -1,7 +1,7 @@
 import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
 import {Mode} from '../const.js';
-import {render, replace} from '../framework/render.js';
+import {render, replace, remove} from '../framework/render.js';
 
 export default class PointPresenter{
   #listPointsViewContainer = null;
@@ -21,6 +21,9 @@ export default class PointPresenter{
     this.#destinations = destinations;
     this.#offers = offers;
 
+    const prevPointViewComponent = this.#pointViewComponent;
+    const prevEditPointViewComponent = this.#editPointViewComponent;
+
     this.#pointViewComponent = new PointView({
       point: this.#point,
       destinations: this.#destinations,
@@ -36,7 +39,28 @@ export default class PointPresenter{
       onFormSubmit: this.#handleFormSubmit,
     });
 
-    render(this.#pointViewComponent, this.#listPointsViewContainer);
+    if (prevPointViewComponent === null || prevEditPointViewComponent === null) {
+      render(this.#pointViewComponent, this.#listPointsViewContainer);
+      return;
+    }
+
+    // Проверка на наличие в DOM необходима,
+    // чтобы не пытаться заменить то, что не было отрисовано
+    if (this.#listPointsViewContainer.contains(prevPointViewComponent.element)) {
+      replace(this.#pointViewComponent, prevPointViewComponent);
+    }
+
+    if (this.#listPointsViewContainer.contains(prevEditPointViewComponent.element)) {
+      replace(this.#editPointViewComponent, prevEditPointViewComponent);
+    }
+
+    remove(prevEditPointViewComponent);
+    remove(prevEditPointViewComponent);
+  }
+
+  destroy() {
+    remove(this.#pointViewComponent);
+    remove(this.#editPointViewComponent);
   }
 
   #escKeyDownHandler = (evt) => {
