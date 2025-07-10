@@ -35,11 +35,6 @@ export default class TripPresenter {
     this.#renderBoard();
   }
 
-  #handlePointChange = (updatedPoint) => {
-    this.#points = updateItem(this.#points, updatedPoint);
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
-  };
-
   #renderTripInfoView() {
     const tripMainContainer = document.querySelector('.trip-main');
     render(this.#tripInfoView, tripMainContainer, RenderPosition.AFTERBEGIN);
@@ -59,10 +54,16 @@ export default class TripPresenter {
   #renderPointView(point, destinations, offers) {
     const pointPresenter = new PointPresenter({
       listPointsViewContainer: this.#listPointsView.element,
+      onDataChange: this.#handlePointChange,
     });
     pointPresenter.init(point, destinations, offers);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
+
+  #handlePointChange = (updatedPoint, destinations, offers) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, destinations, offers);
+  };
 
   #renderNoPointView() {
     render(this.#noPointView, this.#container);
