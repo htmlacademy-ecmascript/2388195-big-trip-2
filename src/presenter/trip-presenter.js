@@ -51,12 +51,14 @@ export default class TripPresenter {
     render(this.#sortingView, this.#container);
   }
 
-  #renderPointView(point, destinations, offers) {
+  #renderPointView(point) {
     const pointPresenter = new PointPresenter({
+      destinations: this.#destinations,
+      offers: this.#offers,
       listPointsViewContainer: this.#listPointsView.element,
       onDataChange: this.#handlePointChange,
     });
-    pointPresenter.init(point, destinations, offers);
+    pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
@@ -97,7 +99,7 @@ export default class TripPresenter {
     // }
 
     for (let i = 0; i < this.#points.length; i++) {
-      this.#renderPointView(this.#points[i], this.#destinations, this.#offers);
+      this.#renderPointView(this.#points[i]);
     }
   }
 }
