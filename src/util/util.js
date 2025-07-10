@@ -29,4 +29,8 @@ function isPointExpiringToday(dueDate) {
   return dueDate && dayjs(dueDate).isSame(dayjs(), 'D');
 }
 
-export {humanizeDate, getDuration, isPointExpired, isPointExpiringToday};
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
+export {humanizeDate, getDuration, isPointExpired, isPointExpiringToday, updateItem};
