@@ -6,7 +6,7 @@ import {RenderPosition, render} from '../framework/render.js';
 import NoPointView from '../view/no-point-view.js';
 import {generateFilter} from '../util/filter.js';
 import {updateItem} from '../util/util.js';
-import PointPresenter from '../presenter/point-presenter.js';
+import PointPresenter from './point-presenter.js';
 
 export default class TripPresenter {
   #container = null;
@@ -57,6 +57,7 @@ export default class TripPresenter {
       offers: this.#offers,
       listPointsViewContainer: this.#listPointsView.element,
       onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange,
     });
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
@@ -65,6 +66,10 @@ export default class TripPresenter {
   #handlePointChange = (updatedPoint, destinations, offers) => {
     this.#points = updateItem(this.#points, updatedPoint);
     this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, destinations, offers);
+  };
+
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
   #renderNoPointView() {

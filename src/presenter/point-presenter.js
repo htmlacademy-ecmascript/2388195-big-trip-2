@@ -7,18 +7,21 @@ export default class PointPresenter{
   #listPointsViewContainer = null;
   #pointViewComponent = null;
   #editPointViewComponent = null;
-
   #handleDataChange = null;
+  #handleModeChange = null;
 
   #point = null;
   #destinations = null;
   #offers = null;
 
-  constructor({destinations, offers, listPointsViewContainer, onDataChange}) {
+  #mode = Mode.DEFAULT;
+
+  constructor({destinations, offers, listPointsViewContainer, onDataChange, onModeChange}) {
     this.#destinations = destinations;
     this.#offers = offers;
     this.#listPointsViewContainer = listPointsViewContainer;
     this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
   init(point) {
@@ -48,13 +51,11 @@ export default class PointPresenter{
       return;
     }
 
-    // Проверка на наличие в DOM необходима,
-    // чтобы не пытаться заменить то, что не было отрисовано
-    if (this.#listPointsViewContainer.contains(prevPointViewComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointViewComponent, prevPointViewComponent);
     }
 
-    if (this.#listPointsViewContainer.contains(prevEditPointViewComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#editPointViewComponent, prevEditPointViewComponent);
     }
 
@@ -65,6 +66,12 @@ export default class PointPresenter{
   destroy() {
     remove(this.#pointViewComponent);
     remove(this.#editPointViewComponent);
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToCard();
+    }
   }
 
   #escKeyDownHandler = (evt) => {
@@ -78,11 +85,14 @@ export default class PointPresenter{
   #replaceCardToForm() {
     replace(this.#editPointViewComponent, this.#pointViewComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
   }
 
   #replaceFormToCard() {
     replace(this.#pointViewComponent, this.#editPointViewComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.DEFAULT;
   }
 
   #handleEditClick = () => {
