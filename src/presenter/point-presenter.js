@@ -39,7 +39,7 @@ export default class PointPresenter{
     });
 
     this.#editPointViewComponent = new EditPointView({
-      mode: Mode.Edit,
+      mode: Mode.EDIT,
       point: this.#point,
       destinations: this.#destinations,
       offers: this.#offers,
@@ -55,7 +55,7 @@ export default class PointPresenter{
       replace(this.#pointViewComponent, prevPointViewComponent);
     }
 
-    if (this.#mode === Mode.EDITING) {
+    if (this.#mode === Mode.EDIT) {
       replace(this.#editPointViewComponent, prevEditPointViewComponent);
     }
 
@@ -86,7 +86,7 @@ export default class PointPresenter{
     replace(this.#editPointViewComponent, this.#pointViewComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#handleModeChange();
-    this.#mode = Mode.EDITING;
+    this.#mode = Mode.EDIT;
   }
 
   #replaceFormToCard() {
