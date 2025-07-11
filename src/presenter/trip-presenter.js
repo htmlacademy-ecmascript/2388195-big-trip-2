@@ -2,21 +2,25 @@ import TripInfoView from '../view/trip-info-view.js';
 import FiltersView from '../view/filters-view.js';
 import SortingView from '../view/sorting-view.js';
 import ListPointsView from '../view/list-points-view.js';
-import EditPointView from '../view/edit-point-view.js';
-import PointView from '../view/point-view.js';
+import {RenderPosition, render} from '../framework/render.js';
 import NoPointView from '../view/no-point-view.js';
-import {RenderPosition, render, replace} from '../framework/render.js';
-import {Mode} from '../const.js';
 import {generateFilter} from '../util/filter.js';
+import {updateItem} from '../util/util.js';
+import PointPresenter from './point-presenter.js';
 
 export default class TripPresenter {
   #container = null;
   #pointModel = null;
   #listPointsView = new ListPointsView();
+  #tripInfoView = new TripInfoView();
+  #noPointView = new NoPointView();
+  #sortingView = new SortingView();
 
   #points = [];
   #destinations = [];
   #offers = [];
+
+  #pointPresenters = new Map();
 
   constructor({container, pointModel}) {
     this.#container = container;
@@ -31,60 +35,61 @@ export default class TripPresenter {
     this.#renderBoard();
   }
 
-  #renderPointView(point, destinations, offers) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
+  #renderTripInfoView() {
+    const tripMainContainer = document.querySelector('.trip-main');
+    render(this.#tripInfoView, tripMainContainer, RenderPosition.AFTERBEGIN);
+  }
 
-    const pointViewComponent = new PointView({
-      point,
-      destinations,
-      offers,
-      onEditClick: () => {
-        replaceCardToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+  #renderFiltersView() {
+    const filtersContainer = document.querySelector('.trip-controls__filters');
+    const filters = generateFilter(this.#points);
+    render(new FiltersView({filters}), filtersContainer);
+  }
+
+  #renderSort() {
+    // render(new SortingView(), this.#container); //почему вот это нужно заменить на то что строкой ниже? Разница.
+    render(this.#sortingView, this.#container);
+  }
+
+  #renderPointView(point) {
+    const pointPresenter = new PointPresenter({
+      destinations: this.#destinations,
+      offers: this.#offers,
+      listPointsViewContainer: this.#listPointsView.element,
+      onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange,
     });
+    pointPresenter.init(point);
+    this.#pointPresenters.set(point.id, pointPresenter);
+  }
 
-    const editPointViewComponent = new EditPointView({
-      mode: Mode.Edit,
-      point,
-      destinations,
-      offers,
-      onFormSubmit: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    });
+  #handlePointChange = (updatedPoint, destinations, offers) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, destinations, offers);
+  };
 
-    function replaceCardToForm() {
-      replace(editPointViewComponent, pointViewComponent);
-    }
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
 
-    function replaceFormToCard() {
-      replace(pointViewComponent, editPointViewComponent);
-    }
+  #renderNoPointView() {
+    render(this.#noPointView, this.#container);
+  }
 
-    render(pointViewComponent, this.#listPointsView.element);
+  #clearPointList() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
   }
 
   #renderBoard() {
-    const tripMainContainer = document.querySelector('.trip-main');
-    const filtersContainer = tripMainContainer.querySelector('.trip-controls__filters');
-    const filters = generateFilter(this.#points);
-    render(new FiltersView({filters}), filtersContainer);
-
     if (this.#points.length === 0) {
-      render(new NoPointView(), this.#container);
+      this.#renderNoPointView();
       return;
     }
 
-    render(new TripInfoView(), tripMainContainer, RenderPosition.AFTERBEGIN);
-    render(new SortingView(), this.#container);
+    this.#renderTripInfoView();
+    this.#renderFiltersView();
+    this.#renderSort();
     render(this.#listPointsView, this.#container);
 
     //Эти комментарии удалю попозже:
@@ -99,7 +104,7 @@ export default class TripPresenter {
     // }
 
     for (let i = 0; i < this.#points.length; i++) {
-      this.#renderPointView(this.#points[i], this.#destinations, this.#offers);
+      this.#renderPointView(this.#points[i]);
     }
   }
 }

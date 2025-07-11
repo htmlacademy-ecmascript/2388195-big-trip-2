@@ -1,6 +1,7 @@
 import {offers} from '../src/mock/offers';
 
 export const Mode = {
+  DEFAULT: 'default',
   EDIT: 'edit',
   CREATE: 'create'
 };
