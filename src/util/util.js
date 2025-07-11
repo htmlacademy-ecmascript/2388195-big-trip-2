@@ -33,4 +33,44 @@ function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
 
-export {humanizeDate, getDuration, isPointExpired, isPointExpiringToday, updateItem};
+function sortPriceDown(a, b) {
+  if (a.basePrice > b.basePrice) {
+    return -1;
+  }
+  if (a.basePrice === b.basePrice) {
+    return 0;
+  }
+  if (a.basePrice < b.basePrice) {
+    return 1;
+  }
+}
+
+function getSortDuration(dateFrom, dateTo) {
+  return dayjs(dateTo).diff(dateFrom, 'm');
+}
+
+function sortDurationDown(a, b) {
+  if (getSortDuration(a.dateFrom, a.dateTo) > getSortDuration(b.dateFrom, b.dateTo)) {
+    return -1;
+  }
+  if (getSortDuration(a.dateFrom, a.dateTo) === getSortDuration(b.dateFrom, b.dateTo)) {
+    return 0;
+  }
+  if (getSortDuration(a.dateFrom, a.dateTo) < getSortDuration(b.dateFrom, b.dateTo)) {
+    return 1;
+  }
+}
+
+function sortDaysUp(a, b) {
+  if (a.dateFrom > b.dateFrom) {
+    return 1;
+  }
+  if (a.dateFrom === b.dateFrom) {
+    return 0;
+  }
+  if (a.dateFrom < b.dateFrom) {
+    return -1;
+  }
+}
+
+export {humanizeDate, getDuration, isPointExpired, isPointExpiringToday, updateItem, sortPriceDown, sortDurationDown, sortDaysUp};

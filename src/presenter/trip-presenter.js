@@ -2,11 +2,12 @@ import TripInfoView from '../view/trip-info-view.js';
 import FiltersView from '../view/filters-view.js';
 import SortingView from '../view/sorting-view.js';
 import ListPointsView from '../view/list-points-view.js';
-import {RenderPosition, render} from '../framework/render.js';
+import {RenderPosition, render, remove} from '../framework/render.js';
 import NoPointView from '../view/no-point-view.js';
 import {generateFilter} from '../util/filter.js';
-import {updateItem} from '../util/util.js';
+import {updateItem, sortPriceDown, sortDurationDown, sortDaysUp} from '../util/util.js';
 import PointPresenter from './point-presenter.js';
+import {SortType, SORTS} from '../const.js';
 
 export default class TripPresenter {
   #container = null;
@@ -14,13 +15,15 @@ export default class TripPresenter {
   #listPointsView = new ListPointsView();
   #tripInfoView = new TripInfoView();
   #noPointView = new NoPointView();
-  #sortingView = new SortingView();
+  #sortingView = null;
 
   #points = [];
   #destinations = [];
   #offers = [];
+  #defaultSortedPoints = [];
 
   #pointPresenters = new Map();
+  #currentSortType = SortType.DEFAULT;
 
   constructor({container, pointModel}) {
     this.#container = container;
@@ -28,9 +31,10 @@ export default class TripPresenter {
   }
 
   init() {
-    this.#points = [...this.#pointModel.points];
+    this.#points = [...this.#pointModel.points].sort(sortDaysUp);
     this.#destinations = [...this.#pointModel.destinations];
     this.#offers = [...this.#pointModel.offers];
+    this.#defaultSortedPoints = [...this.#pointModel.points].sort(sortDaysUp);
 
     this.#renderBoard();
   }
@@ -46,8 +50,44 @@ export default class TripPresenter {
     render(new FiltersView({filters}), filtersContainer);
   }
 
+  #handlePointChange = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#defaultSortedPoints = updateItem(this.#defaultSortedPoints, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #sortPoints(sortType) {
+    switch (sortType) {
+      case SortType.PRICE:
+        this.#points.sort(sortPriceDown);
+        break;
+      case SortType.TIME:
+        this.#points.sort(sortDurationDown);
+        break;
+      default:
+        this.#points = [...this.#defaultSortedPoints];
+    }
+
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortingTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+    this.#sortPoints(sortType);
+    remove(this.#sortingView);
+    this.#renderSort();
+    this.#clearPointList();
+    this.#renderPointList();
+  };
+
   #renderSort() {
-    // render(new SortingView(), this.#container); //почему вот это нужно заменить на то что строкой ниже? Разница.
+    this.#sortingView = new SortingView({
+      sorts: SORTS,
+      currentSortType: this.#currentSortType,
+      onSortingTypeChange: this.#handleSortingTypeChange
+    });
     render(this.#sortingView, this.#container);
   }
 
@@ -63,11 +103,6 @@ export default class TripPresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  #handlePointChange = (updatedPoint, destinations, offers) => {
-    this.#points = updateItem(this.#points, updatedPoint);
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, destinations, offers);
-  };
-
   #handleModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
@@ -81,6 +116,13 @@ export default class TripPresenter {
     this.#pointPresenters.clear();
   }
 
+  #renderPointList() {
+    render(this.#listPointsView, this.#container);
+    for (let i = 0; i < this.#points.length; i++) {
+      this.#renderPointView(this.#points[i]);
+    }
+  }
+
   #renderBoard() {
     if (this.#points.length === 0) {
       this.#renderNoPointView();
@@ -90,21 +132,6 @@ export default class TripPresenter {
     this.#renderTripInfoView();
     this.#renderFiltersView();
     this.#renderSort();
-    render(this.#listPointsView, this.#container);
-
-    //Эти комментарии удалю попозже:
-    // render(new EditPointView(Mode.EDIT, DEFAULT_POINT, this.#destinations, this.#offers), this.#listPointsView.element);
-    // render(new EditPointView(Mode.CREATE, this.#points[0], this.#destinations, this.#offers), this.#listPointsView.element);
-
-    // for (const point of points) {
-    //   render(new PointView(point, destinations, offers), this.#listPointsView.element);
-    // }
-    // for (let i = 0; i < this.#points.length; i++) {
-    //   render(new PointView(this.#points[i], this.#destinations, this.#offers), this.#listPointsView.element);
-    // }
-
-    for (let i = 0; i < this.#points.length; i++) {
-      this.#renderPointView(this.#points[i]);
-    }
+    this.#renderPointList();
   }
 }

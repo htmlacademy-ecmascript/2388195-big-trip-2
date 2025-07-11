@@ -33,3 +33,11 @@ export const FilterType = {
   PRESENT: 'present',
   PAST: 'past',
 };
+
+export const SORTS = ['day', 'event', 'time', 'price', 'offers'];
+
+export const SortType = {
+  DEFAULT: 'day',
+  PRICE: 'price',
+  TIME: 'time',
+};
