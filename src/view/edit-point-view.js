@@ -143,8 +143,11 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
 
-    this.element.querySelector('.event__rollup-btn')
+    this.element.querySelector('.event__rollup-btn') // Можно ли вот так? Или см. ниже строки 149-151 + 171 - 173 есть ли разница (замыкание, стрелочная функция, this)?
       .addEventListener('click', this.#onRollupButtonClick);
+
+    // this.element.querySelector('.event__rollup-btn')
+    //   .addEventListener('click', this.#rollupButtonClickHandler);
 
     this.element.querySelector('.event__type-group')
       .addEventListener('change', this.#typeChangeHandler);
@@ -164,6 +167,10 @@ export default class EditPointView extends AbstractStatefulView {
     // this.#onFormSubmit(this.#point, this.#destinations, this.#offers); Я удалю попозже
     this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
+
+  // #rollupButtonClickHandler = () => {  //evt.preventDefault(); - здесь не нужен?, это же просто кнопка.
+  //   this.#onRollupButtonClick();
+  // };
 
   #typeChangeHandler = (evt) => {
     this.updateElement({...this._state, type: evt.target.value, offers: []});
