@@ -20,7 +20,6 @@ export default class TripPresenter {
   #points = [];
   #destinations = [];
   #offers = [];
-  #defaultSortedPoints = [];
 
   #pointPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
@@ -34,7 +33,6 @@ export default class TripPresenter {
     this.#points = [...this.#pointModel.points].sort(sortDaysUp);
     this.#destinations = [...this.#pointModel.destinations];
     this.#offers = [...this.#pointModel.offers];
-    this.#defaultSortedPoints = [...this.#pointModel.points].sort(sortDaysUp);
 
     this.#renderBoard();
   }
@@ -52,7 +50,6 @@ export default class TripPresenter {
 
   #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
-    this.#defaultSortedPoints = updateItem(this.#defaultSortedPoints, updatedPoint);
     this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   };
 
@@ -65,7 +62,7 @@ export default class TripPresenter {
         this.#points.sort(sortDurationDown);
         break;
       default:
-        this.#points = [...this.#defaultSortedPoints];
+        this.#points.sort(sortDaysUp);
     }
 
     this.#currentSortType = sortType;
@@ -118,9 +115,7 @@ export default class TripPresenter {
 
   #renderPointList() {
     render(this.#listPointsView, this.#container);
-    for (let i = 0; i < this.#points.length; i++) {
-      this.#renderPointView(this.#points[i]);
-    }
+    this.#points.forEach((point) => this.#renderPointView(point));
   }
 
   #renderBoard() {
