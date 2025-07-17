@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {Mode, POINT_TYPES, DEFAULT_POINT, DateFormat} from '../const.js';
 import {humanizeDate} from '../util/util.js';
 
@@ -80,7 +80,7 @@ function createPointEdit(mode, point, destinations, offers) {
     ${offersInOffers.map((offerInOffers) => (
     `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${formatOfferTitle(offerInOffers.title)}-${pointId}" type="checkbox"
-        name="event-offer-${formatOfferTitle(offerInOffers.title)}" ${pointOffersInOffers.map((offer) => offer.id).includes(offerInOffers.id) ? 'checked' : ''}>
+        name="event-offer-${formatOfferTitle(offerInOffers.title)}" ${pointOffersInOffers.map((offer) => offer.id).includes(offerInOffers.id) ? 'checked' : '' } data-offer-id="${pointId}">
 
         <label class="event__offer-label" for="event-offer-${formatOfferTitle(offerInOffers.title)}-${pointId}">
           <span class="event__offer-title">${offerInOffers.title}</span>
@@ -111,33 +111,85 @@ function createPointEdit(mode, point, destinations, offers) {
   </li>`;
 }
 
-export default class EditPointView extends AbstractView {
-  #point = null;
+export default class EditPointView extends AbstractStatefulView {
+  // #point = null; ?????
   #destinations = null;
   #offers = null;
-  #handleFormSubmit = null;
+  #onFormSubmit = null;
+  #onRollupButtonClick = null;
 
-  constructor({mode = Mode.EDIT, point = DEFAULT_POINT, destinations, offers, onFormSubmit}) {
+  constructor({mode = Mode.EDIT, point = DEFAULT_POINT, destinations, offers, onFormSubmit, onRollupButtonClick}) {
     super();
     this.mode = mode;
-    this.#point = point;
+    this._setState(EditPointView.parsePointToState(point));
     this.#destinations = destinations;
     this.#offers = offers;
-    this.#handleFormSubmit = onFormSubmit;
+    this.#onFormSubmit = onFormSubmit;
+    this.#onRollupButtonClick = onRollupButtonClick;
+    this._restoreHandlers();
+  }
 
+  get template() {
+    return createPointEdit(this.mode, this._state, this.#destinations, this.#offers);
+  }
+
+  reset(point) {
+    this.updateElement(
+      EditPointView.parsePointToState(point),
+    );
+  }
+
+  _restoreHandlers() {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
 
     this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#formSubmitHandler);
-  }
+      .addEventListener('click', this.#onRollupButtonClick);
 
-  get template() {
-    return createPointEdit(this.mode, this.#point, this.#destinations, this.#offers);
+    this.element.querySelector('.event__type-group')
+      .addEventListener('change', this.#typeChangeHandler);
+
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationChangeHandler);
+
+    this.element.querySelector('.event__input--price')
+      .addEventListener('change', this.#priceChangeHandler);
+
+    const offerCheckboxes = Array.from(this.element.querySelectorAll('.event__offer-checkbox'));
+    offerCheckboxes.forEach((offerCheckbox) => offerCheckbox.addEventListener('change', this.#offersChangeHandler));
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#point, this.#destinations, this.#offers);
+    // this.#onFormSubmit(this.#point, this.#destinations, this.#offers); Я удалю попозже
+    this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
+
+  #typeChangeHandler = (evt) => {
+    this.updateElement({...this._state, type: evt.target.value, offers: []});
+  };
+
+  #destinationChangeHandler = (evt) => {
+    const selectedDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
+    const idDestination = selectedDestination ? selectedDestination.id : null;
+    this.updateElement({...this._state, destination: idDestination});
+  };
+
+  #priceChangeHandler = (evt) => {
+    this.updateElement({...this._state, basePrice: evt.target.value});
+  };
+
+  #offersChangeHandler = () => {
+    const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked')).map((offer) => offer.dataset.offerId);
+    this._setState({...this._state, offers: checkedOffers});
+  };
+
+  static parsePointToState(point) {
+    return {...point};
+  }
+
+  static parseStateToPoint(state) {
+    const point = {...state};
+    return point;
+  }
 }

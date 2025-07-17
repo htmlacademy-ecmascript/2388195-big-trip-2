@@ -48,11 +48,6 @@ export default class TripPresenter {
     render(new FiltersView({filters}), filtersContainer);
   }
 
-  #handlePointChange = (updatedPoint) => {
-    this.#points = updateItem(this.#points, updatedPoint);
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
-  };
-
   #sortPoints(sortType) {
     switch (sortType) {
       case SortType.PRICE:
@@ -68,7 +63,7 @@ export default class TripPresenter {
     this.#currentSortType = sortType;
   }
 
-  #handleSortingTypeChange = (sortType) => {
+  #onSortingTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
       return;
     }
@@ -83,7 +78,7 @@ export default class TripPresenter {
     this.#sortingView = new SortingView({
       sorts: SORTS,
       currentSortType: this.#currentSortType,
-      onSortingTypeChange: this.#handleSortingTypeChange
+      onSortingTypeChange: this.#onSortingTypeChange
     });
     render(this.#sortingView, this.#container);
   }
@@ -93,14 +88,19 @@ export default class TripPresenter {
       destinations: this.#destinations,
       offers: this.#offers,
       listPointsViewContainer: this.#listPointsView.element,
-      onDataChange: this.#handlePointChange,
-      onModeChange: this.#handleModeChange,
+      onPointChange: this.#onPointChange,
+      onModeChange: this.#onModeChange,
     });
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  #handleModeChange = () => {
+  #onPointChange = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #onModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
