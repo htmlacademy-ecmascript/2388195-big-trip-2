@@ -79,10 +79,10 @@ function createPointEdit(mode, point, destinations, offers) {
 
     ${offersInOffers.map((offerInOffers) => (
     `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${formatOfferTitle(offerInOffers.title)}-${pointId}" type="checkbox"
-        name="event-offer-${formatOfferTitle(offerInOffers.title)}" ${pointOffersInOffers.map((offer) => offer.id).includes(offerInOffers.id) ? 'checked' : '' } data-offer-id="${pointId}">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerInOffers.id}" type="checkbox"
+        name="event-offer-${formatOfferTitle(offerInOffers.title)}" ${pointOffersInOffers.map((offer) => offer.id).includes(offerInOffers.id) ? 'checked' : '' } data-offer-id="${offerInOffers.id}">
 
-        <label class="event__offer-label" for="event-offer-${formatOfferTitle(offerInOffers.title)}-${pointId}">
+        <label class="event__offer-label" for="event-offer-${offerInOffers.id}">
           <span class="event__offer-title">${offerInOffers.title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${offerInOffers.price}</span>
@@ -112,11 +112,10 @@ function createPointEdit(mode, point, destinations, offers) {
 }
 
 export default class EditPointView extends AbstractStatefulView {
-  // #point = null; ?????
   #destinations = null;
   #offers = null;
   #onFormSubmit = null;
-  #onRollupButtonClick = null;
+  #rollupButtonClickHandler = null;
 
   constructor({mode = Mode.EDIT, point = DEFAULT_POINT, destinations, offers, onFormSubmit, onRollupButtonClick}) {
     super();
@@ -125,7 +124,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#destinations = destinations;
     this.#offers = offers;
     this.#onFormSubmit = onFormSubmit;
-    this.#onRollupButtonClick = onRollupButtonClick;
+    this.#rollupButtonClickHandler = onRollupButtonClick;
     this._restoreHandlers();
   }
 
@@ -143,11 +142,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
 
-    this.element.querySelector('.event__rollup-btn') // Можно ли вот так? Или см. ниже строки 149-151 + 171 - 173 есть ли разница (замыкание, стрелочная функция, this)?
-      .addEventListener('click', this.#onRollupButtonClick);
-
-    // this.element.querySelector('.event__rollup-btn')
-    //   .addEventListener('click', this.#rollupButtonClickHandler);
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#rollupButtonClickHandler);
 
     this.element.querySelector('.event__type-group')
       .addEventListener('change', this.#typeChangeHandler);
@@ -158,8 +154,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
 
-    const offerCheckboxes = Array.from(this.element.querySelectorAll('.event__offer-checkbox'));
-    offerCheckboxes.forEach((offerCheckbox) => offerCheckbox.addEventListener('change', this.#offersChangeHandler));
+    this.element.querySelector('.event__available-offers')
+      ?.addEventListener('change', this.#offersChangeHandler);
   }
 
   #formSubmitHandler = (evt) => {
@@ -167,10 +163,6 @@ export default class EditPointView extends AbstractStatefulView {
     // this.#onFormSubmit(this.#point, this.#destinations, this.#offers); Я удалю попозже
     this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
-
-  // #rollupButtonClickHandler = () => {  //evt.preventDefault(); - здесь не нужен?, это же просто кнопка.
-  //   this.#onRollupButtonClick();
-  // };
 
   #typeChangeHandler = (evt) => {
     this.updateElement({...this._state, type: evt.target.value, offers: []});
@@ -186,9 +178,14 @@ export default class EditPointView extends AbstractStatefulView {
     this.updateElement({...this._state, basePrice: evt.target.value});
   };
 
-  #offersChangeHandler = () => {
-    const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked')).map((offer) => offer.dataset.offerId);
-    this._setState({...this._state, offers: checkedOffers});
+  #offersChangeHandler = (evt) => {
+    const checkedOffers = new Set([...this._state.offers]);
+    if (evt.target.checked) {
+      checkedOffers.add(evt.target.dataset.offerId);
+    } else {
+      checkedOffers.delete(evt.target.dataset.offerId);
+    }
+    this._setState({...this._state, offers: [...checkedOffers]});
   };
 
   static parsePointToState(point) {
