@@ -5,19 +5,19 @@ export const destinations = [
     name: 'Chamonix',
     pictures: [
       {
-        src: 'img/photos/chamonix-1.jpeg',
+        src: './img/photos/chamonix-1.jpeg',
         description: 'Chamonix river'
       },
       {
-        src: 'img/photos/chamonix-2.jpeg',
+        src: './img/photos/chamonix-2.jpeg',
         description: 'Chamonix'
       },
       {
-        src: 'img/photos/chamonix-3.jpeg',
+        src: './img/photos/chamonix-3.jpeg',
         description: 'Chamonix'
       },
       {
-        src: 'img/photos/chamonix-4.jpeg',
+        src: './img/photos/chamonix-4.jpeg',
         description: 'Chamonix'
       }
     ]
@@ -28,7 +28,7 @@ export const destinations = [
     name: 'Paris',
     pictures: [
       {
-        src: 'img/photos/paris.jpeg',
+        src: './img/photos/paris.jpeg',
         description: 'Paris'
       }
     ]
@@ -39,23 +39,23 @@ export const destinations = [
     name: 'Gordes',
     pictures: [
       {
-        src: 'img/photos/gordes-1.jpeg',
+        src: './img/photos/gordes-1.jpeg',
         description: 'Gordes'
       },
       {
-        src: 'img/photos/gordes-2.jpg',
+        src: './img/photos/gordes-2.jpg',
         description: 'Gordes'
       },
       {
-        src: 'img/photos/gordes-3.jpg',
+        src: './img/photos/gordes-3.jpg',
         description: 'Gordes'
       },
       {
-        src: 'img/photos/gordes-4.jpeg',
+        src: './img/photos/gordes-4.jpeg',
         description: 'Gordes'
       },
       {
-        src: 'img/photos/gordes-5.jpg',
+        src: './img/photos/gordes-5.jpg',
         description: 'Gordes'
       }
     ]
@@ -66,7 +66,7 @@ export const destinations = [
     name: 'Annecy',
     pictures: [
       {
-        src: 'img/photos/annecy.jpeg',
+        src: './img/photos/annecy.jpeg',
         description: 'Annecy'
       }
     ]
@@ -77,7 +77,7 @@ export const destinations = [
     name: 'Bordeaux',
     pictures: [
       {
-        src: 'img/photos/bordeaux.jpeg',
+        src: './img/photos/bordeaux.jpeg',
         description: 'Bordeaux'
       }
     ]
@@ -88,7 +88,7 @@ export const destinations = [
     name: 'Carcassonne',
     pictures: [
       {
-        src: 'img/photos/carcassonne.jpeg',
+        src: './img/photos/carcassonne.jpeg',
         description: 'Carcassonne'
       }
     ]
@@ -99,7 +99,7 @@ export const destinations = [
     name: 'Normandy',
     pictures: [
       {
-        src: 'img/photos/normandy.jpeg',
+        src: './img/photos/normandy.jpeg',
         description: 'Normandy'
       }
     ]
@@ -116,7 +116,7 @@ export const destinations = [
     name: 'Nice',
     pictures: [
       {
-        src: 'img/photos/nice.jpg',
+        src: './img/photos/nice.jpg',
         description: 'Nice'
       }
     ]
