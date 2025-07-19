@@ -5,7 +5,7 @@ import {DateFormat} from '../const.js';
 
 function createPoint(point, destinations, offers) {
   const {basePrice, dateFrom, dateTo, isFavorite, type} = point;
-  const offersInOffers = offers.find((offer) => offer.type === point.type).offers; //все offers, подходящие данному типу event
+  const offersInOffers = offers.find((offer) => offer.type === point.type).offers;
   const pointOffersInOffers = offersInOffers.filter((offerInOffers) => point.offers.includes(offerInOffers.id));
   const pointDestination = destinations.find((destination) => destination.id === point.destination);
 
