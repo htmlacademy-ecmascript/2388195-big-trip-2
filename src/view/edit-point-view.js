@@ -137,8 +137,6 @@ export default class EditPointView extends AbstractStatefulView {
     return createPointEdit(this.mode, this._state, this.#destinations, this.#offers);
   }
 
-  // Перегружаем метод родителя removeElement,
-  // чтобы при удалении удалялся более не нужный календарь
   removeElement() {
     super.removeElement();
 
@@ -225,7 +223,7 @@ export default class EditPointView extends AbstractStatefulView {
     const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');
     const commonConfig = {
       dateFormat: 'd/m/Y H:i',
-      // time_24hr: true, //Линтер ругается, Project check не проходит
+      'time_24hr': true,
       locale: {
         firstDayOfWeek: 1
       },
@@ -237,7 +235,7 @@ export default class EditPointView extends AbstractStatefulView {
       {
         ...commonConfig,
         defaultDate: this._state.dateFrom,
-        onClose: this.#dateFromCloseHandler, // На событие flatpickr передаём наш колбэк
+        onClose: this.#dateFromCloseHandler,
         maxDate:  this._state.dateTo,
       },
     );
@@ -247,7 +245,7 @@ export default class EditPointView extends AbstractStatefulView {
       {
         ...commonConfig,
         defaultDate: this._state.dateTo,
-        onClose: this.#dateToCloseHandler, // На событие flatpickr передаём наш колбэк
+        onClose: this.#dateToCloseHandler,
         minDate: this._state.dateFrom,
       },
     );
