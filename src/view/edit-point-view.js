@@ -223,7 +223,7 @@ export default class EditPointView extends AbstractStatefulView {
     const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');
     const commonConfig = {
       dateFormat: 'd/m/Y H:i',
-      time_24hr: true,
+      'time_24hr': true,
       locale: {
         firstDayOfWeek: 1
       },
