@@ -5,7 +5,7 @@ import ListPointsView from '../view/list-points-view.js';
 import {RenderPosition, render, remove} from '../framework/render.js';
 import NoPointView from '../view/no-point-view.js';
 import {generateFilter} from '../util/filter.js';
-import {updateItem, sortPriceDown, sortDurationDown, sortDaysUp} from '../util/util.js';
+import {sortPriceDown, sortDurationDown, sortDaysUp} from '../util/util.js';
 import PointPresenter from './point-presenter.js';
 import {SortType, SORTS} from '../const.js';
 
@@ -27,6 +27,8 @@ export default class TripPresenter {
   constructor({container, pointModel}) {
     this.#container = container;
     this.#pointModel = pointModel;
+
+    this.#pointModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
@@ -110,20 +112,36 @@ export default class TripPresenter {
       destinations: this.destinations,
       offers: this.offers,
       listPointsViewContainer: this.#listPointsView.element,
-      onPointChange: this.#onPointChange,
+      onPointChange: this.#handleViewAction,
       onModeChange: this.#onModeChange,
     });
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  #onPointChange = (updatedPoint) => {
-    this.points = updateItem(this.points, updatedPoint);
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
-  };
+  // #onPointChange = (updatedPoint) => {
+  //   this.points = updateItem(this.points, updatedPoint);
+  //   this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  // };
 
   #onModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleViewAction = (actionType, updateType, update) => {
+    console.log(actionType, updateType, update);
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
+  };
+
+  #handleModelEvent = (updateType, data) => {
+    console.log(updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялось описание)
+    // - обновить список (например, когда задача ушла в архив)
+    // - обновить всю доску (например, при переключении фильтра)
   };
 
   #renderNoPointView() {

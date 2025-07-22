@@ -2,6 +2,7 @@ import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
 import {Mode} from '../const.js';
 import {render, replace, remove} from '../framework/render.js';
+import {UserAction, UpdateType} from '../const.js';
 
 export default class PointPresenter{
   #listPointsViewContainer = null;
@@ -102,11 +103,17 @@ export default class PointPresenter{
   };
 
   #onFavoriteClick = () => {
-    this.#onPointChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#onPointChange(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite});
   };
 
   #onFormSubmit = (point) => {
-    this.#onPointChange(point);
+    this.#onPointChange(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      point);
     this.#replaceFormToCard();
   };
 

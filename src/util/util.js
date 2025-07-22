@@ -29,10 +29,6 @@ function isPointExpiringToday(dueDate) {
   return dueDate && dayjs(dueDate).isSame(dayjs(), 'D');
 }
 
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
-}
-
 function sortPriceDown(a, b) {
   if (a.basePrice > b.basePrice) {
     return -1;
@@ -73,4 +69,4 @@ function sortDaysUp(a, b) {
   }
 }
 
-export {humanizeDate, getDuration, isPointExpired, isPointExpiringToday, updateItem, sortPriceDown, sortDurationDown, sortDaysUp};
+export {humanizeDate, getDuration, isPointExpired, isPointExpiringToday, sortPriceDown, sortDurationDown, sortDaysUp};
