@@ -46,6 +46,7 @@ export default class PointPresenter{
       offers: this.#offers,
       onFormSubmit: this.#onFormSubmit,
       onRollupButtonClick: this.#onRollupButtonClick,
+      onDeleteClick: this.#onDeleteClick,
     });
 
     if (prevPointViewComponent === null || prevEditPointViewComponent === null) {
@@ -104,14 +105,14 @@ export default class PointPresenter{
 
   #onFavoriteClick = () => {
     this.#onPointChange(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_POINT,
       UpdateType.MINOR,
       {...this.#point, isFavorite: !this.#point.isFavorite});
   };
 
   #onFormSubmit = (point) => {
     this.#onPointChange(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_POINT,
       UpdateType.MINOR,
       point);
     this.#replaceFormToCard();
@@ -120,5 +121,12 @@ export default class PointPresenter{
   #onRollupButtonClick = () => {
     this.#editPointViewComponent.reset(this.#point);
     this.#replaceFormToCard();
+  };
+
+  #onDeleteClick = (point) => {
+    this.#onPointChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point);
   };
 }
