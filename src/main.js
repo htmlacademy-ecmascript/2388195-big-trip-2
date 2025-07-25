@@ -24,14 +24,14 @@ const tripPresenter = new TripPresenter({
   container: tripEventsContainer,
   pointModel: pointModel,
   filterModel,
-  onNewPointDestroy: handleNewPointFormClose
+  onNewPointFormClose: onNewPointFormClose
 });
 
 const newPointButtonView = new NewPointButtonView({
   onClick: handleNewPointButtonClick
 });
 
-function handleNewPointFormClose() {
+function onNewPointFormClose() {
   newPointButtonView.element.disabled = false;
 }
 

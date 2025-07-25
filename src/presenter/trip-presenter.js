@@ -25,19 +25,19 @@ export default class TripPresenter {
   #filterType = FilterType.EVERYTHING;
 
 
-  constructor({container, pointModel, filterModel, onNewPointDestroy}) {
+  constructor({container, pointModel, filterModel, onNewPointFormClose}) {
     this.#container = container;
     this.#pointModel = pointModel;
     this.#filterModel = filterModel;
 
     this.#newPointPresenter = new NewPointPresenter({
       pointListContainer: this.#listPointsView.element,
-      onPointChange: this.#handleViewAction,
-      onDestroy: onNewPointDestroy
+      onPointChange: this.#onPointChange,
+      onNewPointFormClose: onNewPointFormClose
     });
 
-    this.#pointModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#pointModel.addObserver(this.#onModelChange);
+    this.#filterModel.addObserver(this.#onModelChange);
   }
 
   get points() {
@@ -104,7 +104,7 @@ export default class TripPresenter {
       destinations: this.destinations,
       offers: this.offers,
       listPointsViewContainer: this.#listPointsView.element,
-      onPointChange: this.#handleViewAction,
+      onPointChange: this.#onPointChange,
       onModeChange: this.#onModeChange,
     });
     pointPresenter.init(point);
@@ -116,21 +116,21 @@ export default class TripPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleViewAction = (actionType, updateType, update) => { //вызывается когда мы хотим выполнить какое-то действие, которое приводит к обновлению модели
+  #onPointChange = (actionType, updateType, update) => { //вызывается когда мы хотим выполнить какое-то действие, которое приводит к обновлению модели
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointModel.updatePoint(updateType, update);
+        this.#pointModel.updatePoint(updateType, update);//замена
         break;
       case UserAction.ADD_POINT:
         this.#pointModel.addPoint(updateType, update); //новая point + старые
         break;
       case UserAction.DELETE_POINT:
-        this.#pointModel.deletePoint(updateType, update);
+        this.#pointModel.deletePoint(updateType, update);//удалить
         break;
     }
   };
 
-  #handleModelEvent = (updateType, data) => { //обработчик, который вызывается при изменнении модели
+  #onModelChange = (updateType, data) => { //обработчик, который вызывается при изменнении модели
     switch (updateType) {
       case UpdateType.PATCH:
         this.#pointPresenters.get(data.id).init(data);

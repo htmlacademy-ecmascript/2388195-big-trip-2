@@ -6,14 +6,14 @@ import {UserAction, UpdateType, Mode, DEFAULT_POINT} from '../const.js';
 export default class NewPointPresenter {
   #pointListContainer = null;
   #onPointChange = null;
-  #onDestroy = null;
+  #onNewPointFormClose = null;
 
   #editPointViewComponent = null;
 
-  constructor({pointListContainer, onPointChange, onDestroy}) {
+  constructor({pointListContainer, onPointChange, onNewPointFormClose}) {
     this.#pointListContainer = pointListContainer;
     this.#onPointChange = onPointChange;
-    this.#onDestroy = onDestroy;
+    this.#onNewPointFormClose = onNewPointFormClose;
   }
 
   init() {
@@ -40,7 +40,7 @@ export default class NewPointPresenter {
       return;
     }
 
-    this.#onDestroy();
+    this.#onNewPointFormClose();
 
     remove(this.#editPointViewComponent);
     this.#editPointViewComponent = null;
@@ -51,8 +51,8 @@ export default class NewPointPresenter {
   #onFormSubmit = (point) => {
     this.#onPointChange(
       UserAction.ADD_POINT,
-      UpdateType.MINOR,
-      {id: nanoid(), ...point},
+      UpdateType.MAJOR,
+      {id: nanoid(), ...point}, //??????
     );
     this.destroy();
   };
