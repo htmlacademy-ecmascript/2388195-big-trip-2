@@ -1,7 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createFiltersItem(filter, isChecked) {
-  const {type, count} = filter;
+function createFiltersItem(filters) {
+  const {type, count, isChecked} = filters;
 
   return (
     `<div class="trip-filters__filter">
@@ -13,9 +13,9 @@ function createFiltersItem(filter, isChecked) {
   );
 }
 
-function createFiltersTemplate(filtersItem) {
+function createFiltersTemplate(filtersItem, currentFilterType) {
   const filtersItemTemplate = filtersItem
-    .map((filter, index) => createFiltersItem(filter, index === 0))
+    .map((filter, index) => createFiltersItem(filter, index === 0, currentFilterType))
     .join('');
 
   return (
@@ -29,13 +29,24 @@ function createFiltersTemplate(filtersItem) {
 
 export default class FiltersView extends AbstractView {
   #filters = null;
+  #currentFilter = null;
+  #onFilterTypeChange = null;
 
-  constructor({filters}) {
+  constructor({filters, currentFilterType, onFilterTypeChange}) {
     super();
     this.#filters = filters;
+    this.#currentFilter = currentFilterType;
+    this.#onFilterTypeChange = onFilterTypeChange;
+
+    this.element.addEventListener('change', this.#filterTypeChangeHandler);
   }
 
   get template() {
-    return createFiltersTemplate(this.#filters);
+    return createFiltersTemplate(this.#filters, this.#currentFilter);
   }
+
+  #filterTypeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.#onFilterTypeChange(evt.target.value);
+  };
 }
