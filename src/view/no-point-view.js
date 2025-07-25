@@ -9,7 +9,7 @@ const NoPointTextType = {
 };
 
 function createNoPointTemplate(filterType) {
-  const noPointTextValue = NoPointTextType[filterType];
+  const noPointTextValue = NoPointTextType[filterType].toUpperCase();
 
   return (
     `<p class="trip-events__msg">

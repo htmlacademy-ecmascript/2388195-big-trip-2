@@ -1,4 +1,5 @@
 import {offers} from '../src/mock/offers';
+import {destinations} from '../src/mock/destinations';
 
 export const Mode = {
   DEFAULT: 'default',
@@ -7,16 +8,17 @@ export const Mode = {
 };
 
 export const POINT_TYPES = offers.map((offer) => offer.type);
+export const DESTINATIONS_NAMES = destinations.map((destination) => destination.name);
 
 export const DEFAULT_POINT = {
   id: 0,
   basePrice: 0,
   dateFrom: new Date().toISOString(),
   dateTo: new Date().toISOString(),
-  destination: 0,
+  destination: '',
   isFavorite: false,
   offers: [],
-  type: POINT_TYPES[0],
+  type: 'Flight',
 };
 
 export const DateFormat = {

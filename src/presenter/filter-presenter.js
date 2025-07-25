@@ -7,7 +7,6 @@ export default class FilterPresenter {
   #filterContainer = null;
   #filterModel = null;
   #pointModel = null;
-
   #filtersView = null;
 
   constructor({filterContainer, filterModel, pointModel}) {
@@ -24,34 +23,35 @@ export default class FilterPresenter {
 
     return Object.values(FilterType).map((type) => ({
       type,
-      count: filter[type](points).length
+      count: filter[type](points).length,
+      isChecked : type === this.#filterModel.filter
     }));
   }
 
   init() {
     const filters = this.filters;
-    const prevfiltersView = this.#filtersView;
+    const prevFiltersView = this.#filtersView;
 
     this.#filtersView = new FiltersView({
       filters,
-      currentFilterType: this.#filterModel.filter,
-      onFilterTypeChange: this.#handleFilterTypeChange
+      currentFilterType: this.#filterModel.filter, // del?
+      onFilterTypeChange: this.#onFilterTypeChange
     });
 
-    if (prevfiltersView === null) {
+    if (prevFiltersView === null) {
       render(this.#filtersView, this.#filterContainer);
       return;
     }
 
-    replace(this.#filtersView, prevfiltersView);
-    remove(prevfiltersView);
+    replace(this.#filtersView, prevFiltersView);
+    remove(prevFiltersView);
   }
 
   #handleModelEvent = () => {
     this.init();
   };
 
-  #handleFilterTypeChange = (filterType) => {
+  #onFilterTypeChange = (filterType) => {
     if (this.#filterModel.filter === filterType) {
       return;
     }
