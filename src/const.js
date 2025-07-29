@@ -1,4 +1,5 @@
 import {offers} from '../src/mock/offers';
+import {destinations} from '../src/mock/destinations';
 
 export const Mode = {
   DEFAULT: 'default',
@@ -7,16 +8,17 @@ export const Mode = {
 };
 
 export const POINT_TYPES = offers.map((offer) => offer.type);
+export const DESTINATIONS_NAMES = destinations.map((destination) => destination.name);
 
 export const DEFAULT_POINT = {
   id: 0,
   basePrice: 0,
   dateFrom: new Date().toISOString(),
   dateTo: new Date().toISOString(),
-  destination: 0,
+  destination: '',
   isFavorite: false,
   offers: [],
-  type: POINT_TYPES[0],
+  type: 'flight',
 };
 
 export const DateFormat = {
@@ -40,4 +42,16 @@ export const SortType = {
   DEFAULT: 'day',
   PRICE: 'price',
   TIME: 'time',
+};
+
+export const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
 };

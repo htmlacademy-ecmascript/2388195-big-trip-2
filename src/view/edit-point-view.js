@@ -1,5 +1,6 @@
+import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {Mode, POINT_TYPES, DEFAULT_POINT, DateFormat} from '../const.js';
+import {Mode, POINT_TYPES, DESTINATIONS_NAMES, DEFAULT_POINT, DateFormat} from '../const.js';
 import {humanizeDate} from '../util/util.js';
 import flatpickr from 'flatpickr';
 
@@ -14,7 +15,7 @@ function createPointEdit(mode, point, destinations, offers) {
   const offersInOffers = offers.find((offer) => offer.type === point.type).offers;
   const pointOffersInOffers = offersInOffers.filter((offerInOffers) => point.offers.includes(offerInOffers.id));
   const pointDestination = destinations.find((destination) => destination.id === point.destination);
-  const {name, description, pictures} = pointDestination || {}; //пустой объект для того чтобы получить данные по деструктуризации
+  const {name, description, pictures} = pointDestination || {};
   const pointId = point.id;
 
   return `<li class="trip-events__item">
@@ -44,18 +45,19 @@ function createPointEdit(mode, point, destinations, offers) {
           <label class="event__label  event__type-output" for="event-destination-${pointId}">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination" value="${pointDestination ? name : ''}" list="destination-list-${pointId}">
+          <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination"
+          value="${he.encode(name ? name : '')}" list="destination-list-${pointId}" required>
           <datalist id="destination-list-${pointId}">
-            ${destinations.map((destination) => `<option value="${destination.name}"></option>`).join('')}
+            ${DESTINATIONS_NAMES.map((destinationName) => `<option value="${destinationName}"></option>`).join('')}
           </datalist>
         </div>
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-${pointId}">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-${pointId}" type="text" name="event-start-time" value="${humanizeDate(dateFrom, DateFormat.DATE_TIME)}">
+          <input class="event__input  event__input--time" id="event-start-time-${pointId}" type="text" name="event-start-time" value="${humanizeDate(dateFrom, DateFormat.DATE_TIME)}" required>
           &mdash;
           <label class="visually-hidden" for="event-end-time-${pointId}">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-${pointId}" type="text" name="event-end-time" value="${humanizeDate(dateTo, DateFormat.DATE_TIME)}">
+          <input class="event__input  event__input--time" id="event-end-time-${pointId}" type="text" name="event-end-time" value="${humanizeDate(dateTo, DateFormat.DATE_TIME)}" required>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -63,7 +65,7 @@ function createPointEdit(mode, point, destinations, offers) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${pointId}" type="text" name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-${pointId}" type="number" name="event-price" value="${basePrice}" min="0.01" step = "0.01" required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -121,8 +123,9 @@ export default class EditPointView extends AbstractStatefulView {
   #rollupButtonClickHandler = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #onDeleteClick = null;
 
-  constructor({mode = Mode.EDIT, point = DEFAULT_POINT, destinations, offers, onFormSubmit, onRollupButtonClick}) {
+  constructor({mode = Mode.EDIT, point = DEFAULT_POINT, destinations = [], offers = [], onFormSubmit, onRollupButtonClick, onDeleteClick}) {
     super();
     this.mode = mode;
     this._setState(EditPointView.parsePointToState(point));
@@ -130,6 +133,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.#offers = offers;
     this.#onFormSubmit = onFormSubmit;
     this.#rollupButtonClickHandler = onRollupButtonClick;
+    this.#onDeleteClick = onDeleteClick;
+
     this._restoreHandlers();
   }
 
@@ -161,14 +166,18 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
 
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#rollupButtonClickHandler);
+    if (this.#rollupButtonClickHandler) {
+      this.element.querySelector('.event__rollup-btn')
+        .addEventListener('click', this.#rollupButtonClickHandler);
+    }
 
     this.element.querySelector('.event__type-group')
       .addEventListener('change', this.#typeChangeHandler);
 
-    this.element.querySelector('.event__input--destination')
-      .addEventListener('change', this.#destinationChangeHandler);
+    if (this.#destinationChangeHandler) {
+      this.element.querySelector('.event__input--destination')
+        .addEventListener('change', this.#destinationChangeHandler);
+    }
 
     this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
@@ -176,12 +185,14 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__available-offers')
       ?.addEventListener('change', this.#offersChangeHandler);
 
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formDeleteClickHandler);
+
     this.#setDatepicker();
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    // this.#onFormSubmit(this.#point, this.#destinations, this.#offers); Я удалю попозже
     this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
@@ -217,6 +228,11 @@ export default class EditPointView extends AbstractStatefulView {
   #dateToCloseHandler = ([userDate]) => {
     this._setState({...this._state, dateTo: userDate});
     this.#datepickerFrom.set('maxDate', this._state.dateTo);
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onDeleteClick(EditPointView.parseStateToPoint(this._state));
   };
 
   #setDatepicker() {
