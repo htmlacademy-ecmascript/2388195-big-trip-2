@@ -50,6 +50,7 @@ export const UserAction = {
   DELETE_POINT: 'DELETE_POINT',
 };
 
+
 export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
