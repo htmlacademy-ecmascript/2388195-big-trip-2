@@ -65,7 +65,7 @@ function createPointEdit(mode, point, destinations, offers) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${pointId}" type="number" name="event-price" value="${basePrice}" min="0.01" step = "0.01" required>
+          <input class="event__input  event__input--price" id="event-price-${pointId}" type="number" name="event-price" value="${basePrice}" min="1" required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -180,6 +180,9 @@ export default class EditPointView extends AbstractStatefulView {
     }
 
     this.element.querySelector('.event__input--price')
+      .addEventListener('focus', this.#priceFocusHandler);
+
+    this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
 
     this.element.querySelector('.event__available-offers')
@@ -206,8 +209,13 @@ export default class EditPointView extends AbstractStatefulView {
     this.updateElement({...this._state, destination: idDestination});
   };
 
+  #priceFocusHandler = (evt) => {
+    evt.target.value = '';
+  };
+
   #priceChangeHandler = (evt) => {
-    this.updateElement({...this._state, basePrice: evt.target.value});
+    const noNullPrice = evt.target.value.replace(/^0+/, '');
+    this._setState({...this._state, basePrice: noNullPrice});
   };
 
   #offersChangeHandler = (evt) => {
