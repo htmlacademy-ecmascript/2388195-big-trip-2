@@ -18,7 +18,7 @@ export const DEFAULT_POINT = {
   destination: '',
   isFavorite: false,
   offers: [],
-  type: 'Flight',
+  type: 'flight',
 };
 
 export const DateFormat = {

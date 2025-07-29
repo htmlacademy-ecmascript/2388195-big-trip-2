@@ -22,7 +22,7 @@ const filterPresenter = new FilterPresenter({
 
 const tripPresenter = new TripPresenter({
   container: tripEventsContainer,
-  pointModel: pointModel,
+  pointModel,
   filterModel,
   onNewPointFormClose: onNewPointFormClose
 });

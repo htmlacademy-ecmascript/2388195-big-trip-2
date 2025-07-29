@@ -24,13 +24,14 @@ export default class TripPresenter {
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
 
-
   constructor({container, pointModel, filterModel, onNewPointFormClose}) {
     this.#container = container;
     this.#pointModel = pointModel;
     this.#filterModel = filterModel;
 
     this.#newPointPresenter = new NewPointPresenter({
+      destinations: this.#pointModel.destinations,
+      offers: this.#pointModel.offers,
       pointListContainer: this.#listPointsView.element,
       onPointChange: this.#onPointChange,
       onNewPointFormClose: onNewPointFormClose
@@ -50,9 +51,9 @@ export default class TripPresenter {
         return filteredPoints.sort(sortPriceDown);
       case SortType.TIME:
         return filteredPoints.sort(sortDurationDown);
-
+      default:
+        return filteredPoints.sort(sortDaysUp);
     }
-    return filteredPoints.sort(sortDaysUp);
   }
 
   get destinations() {
@@ -81,10 +82,6 @@ export default class TripPresenter {
   }
 
   #onSortingTypeChange = (sortType) => {
-    if (this.#currentSortType === sortType) {
-      return;
-    }
-
     this.#currentSortType = sortType;
     this.#clearBoard();
     this.#renderBoard();
@@ -116,21 +113,21 @@ export default class TripPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #onPointChange = (actionType, updateType, update) => { //вызывается когда мы хотим выполнить какое-то действие, которое приводит к обновлению модели
+  #onPointChange = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointModel.updatePoint(updateType, update);//замена
+        this.#pointModel.updatePoint(updateType, update);
         break;
       case UserAction.ADD_POINT:
-        this.#pointModel.addPoint(updateType, update); //новая point + старые
+        this.#pointModel.addPoint(updateType, update);
         break;
       case UserAction.DELETE_POINT:
-        this.#pointModel.deletePoint(updateType, update);//удалить
+        this.#pointModel.deletePoint(updateType, update);
         break;
     }
   };
 
-  #onModelChange = (updateType, data) => { //обработчик, который вызывается при изменнении модели
+  #onModelChange = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
         this.#pointPresenters.get(data.id).init(data);

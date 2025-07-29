@@ -1,16 +1,20 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import EditPointView from '../view/edit-point-view.js';
 import {nanoid} from 'nanoid';
-import {UserAction, UpdateType, Mode, DEFAULT_POINT} from '../const.js';
+import {UserAction, UpdateType, Mode} from '../const.js';
 
 export default class NewPointPresenter {
+  #destinations = null;
+  #offers = null;
   #pointListContainer = null;
   #onPointChange = null;
   #onNewPointFormClose = null;
 
   #editPointViewComponent = null;
 
-  constructor({pointListContainer, onPointChange, onNewPointFormClose}) {
+  constructor({destinations, offers, pointListContainer, onPointChange, onNewPointFormClose}) {
+    this.#destinations = destinations;
+    this.#offers = offers;
     this.#pointListContainer = pointListContainer;
     this.#onPointChange = onPointChange;
     this.#onNewPointFormClose = onNewPointFormClose;
@@ -23,15 +27,13 @@ export default class NewPointPresenter {
 
     this.#editPointViewComponent = new EditPointView({
       mode: Mode.CREATE,
-      point: DEFAULT_POINT,
-      destinations: null,
-      offers: null,
+      destinations: this.#destinations,
+      offers: this.#offers,
       onFormSubmit: this.#onFormSubmit,
       onDeleteClick: this.#onDeleteClick
     });
 
     render(this.#editPointViewComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
-
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
@@ -41,10 +43,8 @@ export default class NewPointPresenter {
     }
 
     this.#onNewPointFormClose();
-
     remove(this.#editPointViewComponent);
     this.#editPointViewComponent = null;
-
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
@@ -52,7 +52,7 @@ export default class NewPointPresenter {
     this.#onPointChange(
       UserAction.ADD_POINT,
       UpdateType.MAJOR,
-      {id: nanoid(), ...point}, //??????
+      {...point, id: nanoid()},
     );
     this.destroy();
   };

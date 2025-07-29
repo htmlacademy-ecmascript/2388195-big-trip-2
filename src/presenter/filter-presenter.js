@@ -34,7 +34,7 @@ export default class FilterPresenter {
 
     this.#filtersView = new FiltersView({
       filters,
-      currentFilterType: this.#filterModel.filter, // del?
+      currentFilterType: this.#filterModel.filter,
       onFilterTypeChange: this.#onFilterTypeChange
     });
 

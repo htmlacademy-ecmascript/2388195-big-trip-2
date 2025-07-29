@@ -12,10 +12,10 @@ const formatOfferTitle = (title) => title.split(' ').join('-').toLowerCase();
 
 function createPointEdit(mode, point, destinations, offers) {
   const {basePrice, dateFrom, dateTo, type} = point;
-  const offersInOffers = offers?.find((offer) => offer.type === point.type)?.offers;
-  const pointOffersInOffers = offersInOffers?.filter((offerInOffers) => point.offers.includes(offerInOffers.id));
-  const pointDestination = destinations?.find((destination) => destination.id === point.destination);
-  const {name, description, pictures} = pointDestination || {}; //пустой объект для того чтобы получить данные по деструктуризации
+  const offersInOffers = offers.find((offer) => offer.type === point.type).offers;
+  const pointOffersInOffers = offersInOffers.filter((offerInOffers) => point.offers.includes(offerInOffers.id));
+  const pointDestination = destinations.find((destination) => destination.id === point.destination);
+  const {name, description, pictures} = pointDestination || {};
   const pointId = point.id;
 
   return `<li class="trip-events__item">
@@ -46,18 +46,18 @@ function createPointEdit(mode, point, destinations, offers) {
             ${type}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination"
-          value="${pointDestination ? name : ''}" list="destination-list-${pointId}">
+          value="${he.encode(name ? name : '')}" list="destination-list-${pointId}" required>
           <datalist id="destination-list-${pointId}">
-            ${DESTINATIONS_NAMES?.map((destinationName) => `<option value="${destinationName}"></option>`).join('')}
+            ${DESTINATIONS_NAMES.map((destinationName) => `<option value="${destinationName}"></option>`).join('')}
           </datalist>
         </div>
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-${pointId}">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-${pointId}" type="text" name="event-start-time" value="${he.encode(humanizeDate(dateFrom, DateFormat.DATE_TIME))}" required>
+          <input class="event__input  event__input--time" id="event-start-time-${pointId}" type="text" name="event-start-time" value="${humanizeDate(dateFrom, DateFormat.DATE_TIME)}" required>
           &mdash;
           <label class="visually-hidden" for="event-end-time-${pointId}">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-${pointId}" type="text" name="event-end-time" value="${he.encode(humanizeDate(dateTo, DateFormat.DATE_TIME))}" required>
+          <input class="event__input  event__input--time" id="event-end-time-${pointId}" type="text" name="event-end-time" value="${humanizeDate(dateTo, DateFormat.DATE_TIME)}" required>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -65,7 +65,7 @@ function createPointEdit(mode, point, destinations, offers) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${pointId}" type="number" name="event-price" value="${basePrice}" pattern="${/^[1-9]\d*\.?[1-9]\d*$/}" required>
+          <input class="event__input  event__input--price" id="event-price-${pointId}" type="number" name="event-price" value="${basePrice}" min="0.01" step = "0.01" required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -76,7 +76,7 @@ function createPointEdit(mode, point, destinations, offers) {
       </header>
       <section class="event__details">
 
-    ${offersInOffers?.length ?
+    ${offersInOffers.length ?
     `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -125,7 +125,7 @@ export default class EditPointView extends AbstractStatefulView {
   #datepickerTo = null;
   #onDeleteClick = null;
 
-  constructor({mode = Mode.EDIT, point = DEFAULT_POINT, destinations, offers, onFormSubmit, onRollupButtonClick, onDeleteClick}) {
+  constructor({mode = Mode.EDIT, point = DEFAULT_POINT, destinations = [], offers = [], onFormSubmit, onRollupButtonClick, onDeleteClick}) {
     super();
     this.mode = mode;
     this._setState(EditPointView.parsePointToState(point));
@@ -193,7 +193,6 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    // this.#onFormSubmit(this.#point, this.#destinations, this.#offers); Я удалю попозже
     this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
@@ -202,7 +201,7 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #destinationChangeHandler = (evt) => {
-    const selectedDestination = this.#destinations?.find((destination) => destination.name === evt.target.value);
+    const selectedDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
     const idDestination = selectedDestination ? selectedDestination.id : null;
     this.updateElement({...this._state, destination: idDestination});
   };
