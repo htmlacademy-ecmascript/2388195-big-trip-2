@@ -31,7 +31,6 @@ export default class NewPointPresenter {
       onFormSubmit: this.#onFormSubmit,
       onDeleteClick: this.#onDeleteClick
     });
-    console.log(this.#destinations);
     render(this.#editPointViewComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
@@ -72,7 +71,6 @@ export default class NewPointPresenter {
       UpdateType.MAJOR, //MINOR,
       {point},
     );
-    // this.destroy();
   };
 
   #onDeleteClick = () => {

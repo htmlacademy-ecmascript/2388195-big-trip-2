@@ -5,9 +5,10 @@ import TripPresenter from './presenter/trip-presenter.js';
 import NewPointButtonView from './view/new-point-button-view.js';
 import {render, RenderPosition} from './framework/render.js';
 import PointsApiService from './points-api-service.js';
+import {generatePassword} from './const.js';
 
-// const AUTHORIZATION = 'Basic ${getRandomPassword()}';
-const AUTHORIZATION = 'Basic hS2sfS44wcl1s33j';
+
+const AUTHORIZATION = `Basic ${generatePassword()}`;
 const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
 const tripEventsContainer = document.querySelector('.trip-events');

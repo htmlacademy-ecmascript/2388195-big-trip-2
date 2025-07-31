@@ -152,7 +152,6 @@ export default class PointPresenter{
       UserAction.UPDATE_POINT,
       UpdateType.MINOR,
       point);
-    // this.#replaceFormToCard();
   };
 
   #onRollupButtonClick = () => {

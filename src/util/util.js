@@ -69,12 +69,4 @@ function sortDaysUp(a, b) {
   }
 }
 
-
-// function getRandomPassword(items) {
-//   return items[Math.floor(Math.random() * items.length)];
-// }
-
-// export {getRandomPassword};
-
-
 export {humanizeDate, getDuration, isPointExpired, isPointExpiringToday, sortPriceDown, sortDurationDown, sortDaysUp};
