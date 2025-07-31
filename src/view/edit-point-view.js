@@ -5,13 +5,14 @@ import {humanizeDate} from '../util/util.js';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
+// isDeleting как добавить без нагромождения тернарных операторов? стр. 75 button class="event__reset-btn" type="reset"
 
 const upFirstLetter = (word) => `${word[0].toUpperCase()}${word.slice(1)}`;
 const formatOfferTitle = (title) => title.split(' ').join('-').toLowerCase();
 
 
 function createPointEdit(mode, point, destinations, offers) {
-  const {basePrice, dateFrom, dateTo, type} = point;
+  const {basePrice, dateFrom, dateTo, type, isDisabled, isSaving} = point;
   const pointTypes = offers.map((offer) => offer.type);
   const destinationsNames = destinations.map((destination) => destination.name);
   const offersInOffers = offers.find((offer) => offer.type === point.type)?.offers;
@@ -33,7 +34,7 @@ function createPointEdit(mode, point, destinations, offers) {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${pointTypes.map((pointType) => (
+              ${pointTypes?.map((pointType) => (
     `<div class="event__type-item">
         <input id="event-type-${pointType}-${pointId}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${pointType === type ? 'checked' : ''} >
         <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-${pointId}">${upFirstLetter(pointType)}</label>
@@ -50,7 +51,7 @@ function createPointEdit(mode, point, destinations, offers) {
           <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination"
           value="${he.encode(name ? name : '')}" list="destination-list-${pointId}" required>
           <datalist id="destination-list-${pointId}">
-            ${destinationsNames.map((destinationName) => `<option value="${destinationName}"></option>`).join('')}
+            ${destinationsNames?.map((destinationName) => `<option value="${destinationName}"></option>`).join('')}
           </datalist>
         </div>
 
@@ -70,8 +71,9 @@ function createPointEdit(mode, point, destinations, offers) {
           <input class="event__input  event__input--price" id="event-price-${pointId}" type="number" name="event-price" value="${basePrice}" min="1" required>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${mode === Mode.EDIT ? 'Delete' : 'Cancel'}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving' : 'Save'}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${mode === Mode.EDIT ? 'Delete' : 'Cancel'}</button>
+
         ${mode === Mode.EDIT ? `<button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>` : ''}
@@ -278,11 +280,20 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   static parsePointToState(point) {
-    return {...point};
+    return {...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
   }
 
   static parseStateToPoint(state) {
     const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
     return point;
   }
 }

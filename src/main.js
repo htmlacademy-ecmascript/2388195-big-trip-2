@@ -1,4 +1,4 @@
-import PointModel from './model/points-model.js';
+import PointModel from './model/point-model.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import TripPresenter from './presenter/trip-presenter.js';
@@ -47,6 +47,7 @@ function handleNewPointButtonClick() {
 
 filterPresenter.init();
 tripPresenter.init();
+
 pointModel.init()
   .finally(() => {
     render(newPointButtonView, siteHeaderElement, RenderPosition.BEFOREEND);
