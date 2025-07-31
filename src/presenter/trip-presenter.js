@@ -8,6 +8,7 @@ import {sortPriceDown, sortDurationDown, sortDaysUp} from '../util/util.js';
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import {SortType, SORTS, UpdateType, UserAction, FilterType} from '../const.js';
+import LoadingView from '../view/loading-view.js';
 
 export default class TripPresenter {
   #container = null;
@@ -18,6 +19,8 @@ export default class TripPresenter {
   #tripInfoView = new TripInfoView();
   #noPointView = null;
   #sortingView = null;
+  #loadingView = new LoadingView();
+  #isLoading = true;
 
   #pointPresenters = new Map();
   #newPointPresenter = null;
@@ -74,6 +77,10 @@ export default class TripPresenter {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
+  }
+
+  #renderLoading() {
+    render(this.#loadingView, this.#container, RenderPosition.AFTERBEGIN);
   }
 
   #renderTripInfoView() {
@@ -140,6 +147,11 @@ export default class TripPresenter {
         this.#clearBoard({resetSortType: true});
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingView);
+        this.#renderBoard();
+        break;
     }
   };
 
@@ -154,6 +166,7 @@ export default class TripPresenter {
     this.#pointPresenters.clear();
 
     remove(this.#sortingView);
+    remove(this.#loadingView);
     remove(this.#noPointView);
 
     if (resetSortType) {
@@ -166,6 +179,11 @@ export default class TripPresenter {
   }
 
   #renderBoard() {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     if (this.points.length === 0) {
       this.#renderNoPointView();
       return;

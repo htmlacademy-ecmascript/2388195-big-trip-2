@@ -1,35 +1,47 @@
 import Observable from '../framework/observable.js';
-import {points} from '../mock/points';
-import {destinations} from '../mock/destinations';
-import {offers} from '../mock/offers';
+import {UpdateType} from '../const.js';
 
 export default class PointModel extends Observable {
   #points = [];
   #destinations = [];
   #offers = [];
-  #PointsApiService = null;
+  #pointsApiService = null;
 
-  constructor({PointsApiService}) {
+  constructor({pointsApiService}) {
     super();
-    this.#PointsApiService = PointsApiService;
+    this.#pointsApiService = pointsApiService;
 
-    this.#PointsApiService.points.then((points) => {
-      console.log(points.map(this.#adaptToClient));
-    });
+    // this.#pointsApiService.points.then((points) => {
+    //   console.log(points.map(this.#adaptToClient));
+    // });
 
-    this.#PointsApiService.destinations.then((destinations) => {
-      console.log(destinations);
-    });
+    // this.#pointsApiService.destinations.then((destinations) => {
+    //   console.log(destinations);
+    // });
 
-    this.#PointsApiService.offers.then((offers) => {
-      console.log(offers);
-    });
+    // this.#pointsApiService.offers.then((offers) => {
+    //   console.log(offers);
+    // });
   }
 
-  init() {
-    this.#points = points;
-    this.#destinations = destinations;
-    this.#offers = offers;
+  async init() {
+    try {
+      const points = await this.#pointsApiService.points;
+      this.#points = points.map(this.#adaptToClient);
+
+      const destinations = await this.#pointsApiService.destinations;
+      this.#destinations = destinations;
+
+      const offers = await this.#pointsApiService.offers;
+      this.#offers = offers;
+
+    } catch(err) {
+      this.#points = [];
+      this.#destinations = [];
+      this.#offers = [];
+    }
+
+    this._notify(UpdateType.INIT);
   }
 
   get points() {
@@ -44,20 +56,26 @@ export default class PointModel extends Observable {
     return this.#offers;
   }
 
-  updatePoint(updateType, update) {
+  async updatePoint(updateType, update) {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting point');
     }
 
-    this.#points = [
-      ...this.#points.slice(0, index),
-      update,
-      ...this.#points.slice(index + 1),
-    ];
+    try {
+      const response = await this.#pointsApiService.updatePoint(update);
+      const updatedPoint = this.#adaptToClient(response);
+      this.#points = [
+        ...this.#points.slice(0, index),
+        updatedPoint,
+        ...this.#points.slice(index + 1),
+      ];
 
-    this._notify(updateType, update);
+      this._notify(updateType, updatedPoint);
+    } catch(err) {
+      throw new Error('Can\'t update task');
+    }
   }
 
   addPoint(updateType, update) {

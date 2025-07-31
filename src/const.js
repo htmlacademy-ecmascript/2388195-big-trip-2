@@ -1,14 +1,8 @@
-import {offers} from '../src/mock/offers';
-import {destinations} from '../src/mock/destinations';
-
 export const Mode = {
   DEFAULT: 'default',
   EDIT: 'edit',
   CREATE: 'create'
 };
-
-export const POINT_TYPES = offers.map((offer) => offer.type);
-export const DESTINATIONS_NAMES = destinations.map((destination) => destination.name);
 
 export const DEFAULT_POINT = {
   id: 0,
@@ -54,4 +48,5 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };

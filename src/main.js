@@ -6,7 +6,7 @@ import NewPointButtonView from './view/new-point-button-view.js';
 import {render, RenderPosition} from './framework/render.js';
 import PointsApiService from './points-api-service.js';
 
-// const AUTHORIZATION = 'Basic ${RandomPassword}';
+// const AUTHORIZATION = 'Basic ${getRandomPassword()}';
 const AUTHORIZATION = 'Basic hS2sfS44wcl1s33j';
 const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
@@ -15,9 +15,8 @@ const filtersContainer = document.querySelector('.trip-controls__filters');
 const siteHeaderElement = document.querySelector('.trip-main');
 
 const pointModel = new PointModel({
-  PointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
+  pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
 });
-pointModel.init();
 
 const filterModel = new FilterModel();
 const filterPresenter = new FilterPresenter({
@@ -46,7 +45,9 @@ function handleNewPointButtonClick() {
   newPointButtonView.element.disabled = true;
 }
 
-render(newPointButtonView, siteHeaderElement, RenderPosition.BEFOREEND);
-
 filterPresenter.init();
 tripPresenter.init();
+pointModel.init()
+  .finally(() => {
+    render(newPointButtonView, siteHeaderElement, RenderPosition.BEFOREEND);
+  });

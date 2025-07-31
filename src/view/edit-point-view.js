@@ -1,6 +1,6 @@
 import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {Mode, POINT_TYPES, DESTINATIONS_NAMES, DEFAULT_POINT, DateFormat} from '../const.js';
+import {Mode, DEFAULT_POINT, DateFormat} from '../const.js';
 import {humanizeDate} from '../util/util.js';
 import flatpickr from 'flatpickr';
 
@@ -12,8 +12,10 @@ const formatOfferTitle = (title) => title.split(' ').join('-').toLowerCase();
 
 function createPointEdit(mode, point, destinations, offers) {
   const {basePrice, dateFrom, dateTo, type} = point;
-  const offersInOffers = offers.find((offer) => offer.type === point.type).offers;
-  const pointOffersInOffers = offersInOffers.filter((offerInOffers) => point.offers.includes(offerInOffers.id));
+  const pointTypes = offers.map((offer) => offer.type);
+  const destinationsNames = destinations.map((destination) => destination.name);
+  const offersInOffers = offers.find((offer) => offer.type === point.type)?.offers;
+  const pointOffersInOffers = offersInOffers?.filter((offerInOffers) => point.offers.includes(offerInOffers.id));
   const pointDestination = destinations.find((destination) => destination.id === point.destination);
   const {name, description, pictures} = pointDestination || {};
   const pointId = point.id;
@@ -31,7 +33,7 @@ function createPointEdit(mode, point, destinations, offers) {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${POINT_TYPES.map((pointType) => (
+              ${pointTypes.map((pointType) => (
     `<div class="event__type-item">
         <input id="event-type-${pointType}-${pointId}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${pointType === type ? 'checked' : ''} >
         <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-${pointId}">${upFirstLetter(pointType)}</label>
@@ -48,7 +50,7 @@ function createPointEdit(mode, point, destinations, offers) {
           <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination"
           value="${he.encode(name ? name : '')}" list="destination-list-${pointId}" required>
           <datalist id="destination-list-${pointId}">
-            ${DESTINATIONS_NAMES.map((destinationName) => `<option value="${destinationName}"></option>`).join('')}
+            ${destinationsNames.map((destinationName) => `<option value="${destinationName}"></option>`).join('')}
           </datalist>
         </div>
 
@@ -76,7 +78,7 @@ function createPointEdit(mode, point, destinations, offers) {
       </header>
       <section class="event__details">
 
-    ${offersInOffers.length ?
+    ${offersInOffers?.length ?
     `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
