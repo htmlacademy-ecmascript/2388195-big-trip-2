@@ -1,19 +1,22 @@
 import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {Mode, POINT_TYPES, DESTINATIONS_NAMES, DEFAULT_POINT, DateFormat} from '../const.js';
+import {Mode, DEFAULT_POINT, DateFormat} from '../const.js';
 import {humanizeDate} from '../util/util.js';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
+// isDeleting как добавить без нагромождения тернарных операторов? стр. 75 button class="event__reset-btn" type="reset"
 
 const upFirstLetter = (word) => `${word[0].toUpperCase()}${word.slice(1)}`;
 const formatOfferTitle = (title) => title.split(' ').join('-').toLowerCase();
 
 
 function createPointEdit(mode, point, destinations, offers) {
-  const {basePrice, dateFrom, dateTo, type} = point;
-  const offersInOffers = offers.find((offer) => offer.type === point.type).offers;
-  const pointOffersInOffers = offersInOffers.filter((offerInOffers) => point.offers.includes(offerInOffers.id));
+  const {basePrice, dateFrom, dateTo, type, isDisabled, isSaving} = point;
+  const pointTypes = offers.map((offer) => offer.type);
+  const destinationsNames = destinations.map((destination) => destination.name);
+  const offersInOffers = offers.find((offer) => offer.type === point.type)?.offers;
+  const pointOffersInOffers = offersInOffers?.filter((offerInOffers) => point.offers.includes(offerInOffers.id));
   const pointDestination = destinations.find((destination) => destination.id === point.destination);
   const {name, description, pictures} = pointDestination || {};
   const pointId = point.id;
@@ -31,7 +34,7 @@ function createPointEdit(mode, point, destinations, offers) {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${POINT_TYPES.map((pointType) => (
+              ${pointTypes?.map((pointType) => (
     `<div class="event__type-item">
         <input id="event-type-${pointType}-${pointId}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${pointType === type ? 'checked' : ''} >
         <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-${pointId}">${upFirstLetter(pointType)}</label>
@@ -48,7 +51,7 @@ function createPointEdit(mode, point, destinations, offers) {
           <input class="event__input  event__input--destination" id="event-destination-${pointId}" type="text" name="event-destination"
           value="${he.encode(name ? name : '')}" list="destination-list-${pointId}" required>
           <datalist id="destination-list-${pointId}">
-            ${DESTINATIONS_NAMES.map((destinationName) => `<option value="${destinationName}"></option>`).join('')}
+            ${destinationsNames?.map((destinationName) => `<option value="${destinationName}"></option>`).join('')}
           </datalist>
         </div>
 
@@ -65,18 +68,19 @@ function createPointEdit(mode, point, destinations, offers) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${pointId}" type="number" name="event-price" value="${basePrice}" min="0.01" step = "0.01" required>
+          <input class="event__input  event__input--price" id="event-price-${pointId}" type="number" name="event-price" value="${basePrice}" min="1" required>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${mode === Mode.EDIT ? 'Delete' : 'Cancel'}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving' : 'Save'}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${mode === Mode.EDIT ? 'Delete' : 'Cancel'}</button>
+
         ${mode === Mode.EDIT ? `<button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>` : ''}
       </header>
       <section class="event__details">
 
-    ${offersInOffers.length ?
+    ${offersInOffers?.length ?
     `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -180,6 +184,9 @@ export default class EditPointView extends AbstractStatefulView {
     }
 
     this.element.querySelector('.event__input--price')
+      .addEventListener('focus', this.#priceFocusHandler);
+
+    this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
 
     this.element.querySelector('.event__available-offers')
@@ -206,8 +213,13 @@ export default class EditPointView extends AbstractStatefulView {
     this.updateElement({...this._state, destination: idDestination});
   };
 
+  #priceFocusHandler = (evt) => {
+    evt.target.value = '';
+  };
+
   #priceChangeHandler = (evt) => {
-    this.updateElement({...this._state, basePrice: evt.target.value});
+    const noNullPrice = evt.target.value.replace(/^0+/, '');
+    this._setState({...this._state, basePrice: noNullPrice});
   };
 
   #offersChangeHandler = (evt) => {
@@ -268,11 +280,20 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   static parsePointToState(point) {
-    return {...point};
+    return {...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
   }
 
   static parseStateToPoint(state) {
     const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
     return point;
   }
 }
