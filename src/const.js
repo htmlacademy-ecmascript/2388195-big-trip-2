@@ -1,6 +1,13 @@
 export const AUTHORIZATION = 'Basic eo0w590ik29456a';
 export const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
+export const ApiMethod = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
 export const Mode = {
   DEFAULT: 'default',
   EDIT: 'edit',
