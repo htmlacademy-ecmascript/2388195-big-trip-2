@@ -5,11 +5,8 @@ import TripPresenter from './presenter/trip-presenter.js';
 import NewPointButtonView from './view/new-point-button-view.js';
 import {render, RenderPosition} from './framework/render.js';
 import PointsApiService from './points-api-service.js';
-import {generatePassword} from './const.js';
+import {AUTHORIZATION, END_POINT} from './const.js';
 
-
-const AUTHORIZATION = `Basic ${generatePassword()}`;
-const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
 const tripEventsContainer = document.querySelector('.trip-events');
 const filtersContainer = document.querySelector('.trip-controls__filters');
@@ -53,3 +50,4 @@ pointModel.init()
   .finally(() => {
     render(newPointButtonView, siteHeaderElement, RenderPosition.BEFOREEND);
   });
+

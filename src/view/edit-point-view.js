@@ -12,7 +12,7 @@ const formatOfferTitle = (title) => title.split(' ').join('-').toLowerCase();
 
 
 function createPointEdit(mode, point, destinations, offers) {
-  const {basePrice, dateFrom, dateTo, type, isDisabled, isSaving} = point;
+  const {basePrice, dateFrom, dateTo, type, isDisabled, isSaving, isDeleting} = point;
   const pointTypes = offers.map((offer) => offer.type);
   const destinationsNames = destinations.map((destination) => destination.name);
   const offersInOffers = offers.find((offer) => offer.type === point.type)?.offers;
@@ -20,6 +20,7 @@ function createPointEdit(mode, point, destinations, offers) {
   const pointDestination = destinations.find((destination) => destination.id === point.destination);
   const {name, description, pictures} = pointDestination || {};
   const pointId = point.id;
+  const resetButtonText = mode === Mode.EDIT ? 'Delete' : 'Cancel';
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -72,7 +73,7 @@ function createPointEdit(mode, point, destinations, offers) {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving' : 'Save'}</button>
-        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${mode === Mode.EDIT ? 'Delete' : 'Cancel'}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting' : resetButtonText}</button>
 
         ${mode === Mode.EDIT ? `<button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
@@ -201,16 +202,17 @@ export default class EditPointView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
+
   };
 
   #typeChangeHandler = (evt) => {
-    this.updateElement({...this._state, type: evt.target.value, offers: []});
+    this.updateElement({type: evt.target.value, offers: []});
   };
 
   #destinationChangeHandler = (evt) => {
     const selectedDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
     const idDestination = selectedDestination ? selectedDestination.id : null;
-    this.updateElement({...this._state, destination: idDestination});
+    this.updateElement({destination: idDestination});
   };
 
   #priceFocusHandler = (evt) => {
@@ -219,7 +221,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #priceChangeHandler = (evt) => {
     const noNullPrice = evt.target.value.replace(/^0+/, '');
-    this._setState({...this._state, basePrice: noNullPrice});
+    this._setState({basePrice: noNullPrice});
   };
 
   #offersChangeHandler = (evt) => {
@@ -229,21 +231,22 @@ export default class EditPointView extends AbstractStatefulView {
     } else {
       checkedOffers.delete(evt.target.dataset.offerId);
     }
-    this._setState({...this._state, offers: [...checkedOffers]});
+    this._setState({offers: [...checkedOffers]});
   };
 
   #dateFromCloseHandler = ([userDate]) => {
-    this._setState({...this._state, dateFrom: userDate});
+    this._setState({dateFrom: userDate});
     this.#datepickerTo.set('minDate', this._state.dateFrom);
   };
 
   #dateToCloseHandler = ([userDate]) => {
-    this._setState({...this._state, dateTo: userDate});
+    this._setState({dateTo: userDate});
     this.#datepickerFrom.set('maxDate', this._state.dateTo);
   };
 
   #formDeleteClickHandler = (evt) => {
     evt.preventDefault();
+    this.updateElement({isDeleting: true});
     this.#onDeleteClick(EditPointView.parseStateToPoint(this._state));
   };
 
@@ -288,7 +291,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   static parseStateToPoint(state) {
-    const point = {...state};
+    const point = {...state, basePrice: Number(state.basePrice)};
 
     delete point.isDisabled;
     delete point.isSaving;

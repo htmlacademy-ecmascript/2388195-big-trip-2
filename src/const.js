@@ -1,3 +1,6 @@
+export const AUTHORIZATION = 'Basic eo0w590ik29456a';
+export const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
+
 export const Mode = {
   DEFAULT: 'default',
   EDIT: 'edit',
@@ -5,10 +8,9 @@ export const Mode = {
 };
 
 export const DEFAULT_POINT = {
-  id: 0,
   basePrice: 0,
   dateFrom: new Date().toISOString(),
-  dateTo: new Date().toISOString(),
+  dateTo: new Date(new Date().getTime() + 1000 * 60).toISOString(),
   destination: '',
   isFavorite: false,
   offers: [],
@@ -50,13 +52,3 @@ export const UpdateType = {
   MAJOR: 'MAJOR',
   INIT: 'INIT',
 };
-
-export function generatePassword(){
-  const length = 16;
-  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0, n = charset.length; i < length; ++i) {
-    result += charset.charAt(Math.floor(Math.random() * n));
-  }
-  return result;
-}

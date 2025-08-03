@@ -27,7 +27,6 @@ export default class TripPresenter {
   #sortingView = null;
   #loadingView = new LoadingView();
   #isLoading = true;
-
   #pointPresenters = new Map();
   #newPointPresenter = null;
   #currentSortType = SortType.DEFAULT;
@@ -43,8 +42,6 @@ export default class TripPresenter {
     this.#filterModel = filterModel;
 
     this.#newPointPresenter = new NewPointPresenter({
-      destinations: this.#pointModel.destinations,
-      offers: this.#pointModel.offers,
       pointListContainer: this.#listPointsView.element,
       onPointChange: this.#onPointChange,
       onNewPointFormClose: onNewPointFormClose
@@ -86,7 +83,7 @@ export default class TripPresenter {
   createPoint() {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#newPointPresenter.init();
+    this.#newPointPresenter.init({destinations: this.destinations, offers: this.offers});
   }
 
   #renderLoading() {

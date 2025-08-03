@@ -3,31 +3,27 @@ import EditPointView from '../view/edit-point-view.js';
 import {UserAction, UpdateType, Mode} from '../const.js';
 
 export default class NewPointPresenter {
-  #destinations = null;
-  #offers = null;
   #pointListContainer = null;
   #onPointChange = null;
   #onNewPointFormClose = null;
 
   #editPointViewComponent = null;
 
-  constructor({destinations, offers, pointListContainer, onPointChange, onNewPointFormClose}) {
-    this.#destinations = destinations;
-    this.#offers = offers;
+  constructor({pointListContainer, onPointChange, onNewPointFormClose}) {
     this.#pointListContainer = pointListContainer;
     this.#onPointChange = onPointChange;
     this.#onNewPointFormClose = onNewPointFormClose;
   }
 
-  init() {
+  init({destinations, offers}) {
     if (this.#editPointViewComponent !== null) {
       return;
     }
 
     this.#editPointViewComponent = new EditPointView({
       mode: Mode.CREATE,
-      destinations: this.#destinations,
-      offers: this.#offers,
+      destinations,
+      offers,
       onFormSubmit: this.#onFormSubmit,
       onDeleteClick: this.#onDeleteClick
     });
@@ -69,7 +65,7 @@ export default class NewPointPresenter {
     this.#onPointChange(
       UserAction.ADD_POINT,
       UpdateType.MAJOR, //MINOR,
-      {point},
+      point,
     );
   };
 
