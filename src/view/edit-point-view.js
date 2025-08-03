@@ -5,7 +5,6 @@ import {humanizeDate} from '../util/util.js';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
-// isDeleting как добавить без нагромождения тернарных операторов? стр. 75 button class="event__reset-btn" type="reset"
 
 const upFirstLetter = (word) => `${word[0].toUpperCase()}${word.slice(1)}`;
 const formatOfferTitle = (title) => title.split(' ').join('-').toLowerCase();
