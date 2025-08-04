@@ -1,4 +1,4 @@
-export const AUTHORIZATION = 'Basic eo0w590ik29456a';
+export const AUTHORIZATION = 'Basic eo0w590ik29459a';
 export const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
 export const ApiMethod = {
