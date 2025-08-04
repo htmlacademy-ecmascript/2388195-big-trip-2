@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 
-function humanizeDate(dueDate, dateFormat) {
-  return dueDate ? dayjs(dueDate).format(dateFormat) : '';
+export function humanizeDate(date, dateFormat) {
+  return date ? dayjs(date).format(dateFormat) : '';
 }
 
-function getDuration(dateFrom, dateTo) {
+export function getDuration(dateFrom, dateTo) {
   const durationEvent = dayjs(dateTo).diff(dateFrom, 'm');
 
   if (durationEvent < 60) {
@@ -21,15 +21,19 @@ function getDuration(dateFrom, dateTo) {
   }
 }
 
-function isPointExpired(dueDate) {
-  return dueDate && dayjs().isAfter(dueDate, 'D');
+export function isPointPast(dateTo) {
+  return dayjs(dateTo).isBefore(dayjs());
 }
 
-function isPointExpiringToday(dueDate) {
-  return dueDate && dayjs(dueDate).isSame(dayjs(), 'D');
+export function isPointPresent(dateFrom, dateTo) {
+  return (dayjs(dateFrom).isSame(dayjs()) || dayjs(dateFrom).isBefore(dayjs())) && (dayjs(dateTo).isSame(dayjs()) || dayjs(dateTo).isAfter(dayjs()));
 }
 
-function sortPriceDown(a, b) {
+export function isPointFuture(dateFrom) {
+  return dayjs(dateFrom).isAfter(dayjs());
+}
+
+export function sortPriceDown(a, b) {
   if (Number(a.basePrice) > Number(b.basePrice)) {
     return -1;
   }
@@ -41,11 +45,11 @@ function sortPriceDown(a, b) {
   }
 }
 
-function getSortDuration(dateFrom, dateTo) {
+export function getSortDuration(dateFrom, dateTo) {
   return dayjs(dateTo).diff(dateFrom, 'm');
 }
 
-function sortDurationDown(a, b) {
+export function sortDurationDown(a, b) {
   if (getSortDuration(a.dateFrom, a.dateTo) > getSortDuration(b.dateFrom, b.dateTo)) {
     return -1;
   }
@@ -57,7 +61,7 @@ function sortDurationDown(a, b) {
   }
 }
 
-function sortDaysUp(a, b) {
+export function sortDaysUp(a, b) {
   if (a.dateFrom > b.dateFrom) {
     return 1;
   }
@@ -68,5 +72,3 @@ function sortDaysUp(a, b) {
     return -1;
   }
 }
-
-export {humanizeDate, getDuration, isPointExpired, isPointExpiringToday, sortPriceDown, sortDurationDown, sortDaysUp};

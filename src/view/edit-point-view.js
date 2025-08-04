@@ -200,6 +200,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+    this.updateElement({isSaving: true});
     this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
 
   };
