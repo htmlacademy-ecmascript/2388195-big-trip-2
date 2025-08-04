@@ -30,13 +30,13 @@ function isPointExpiringToday(dueDate) {
 }
 
 function sortPriceDown(a, b) {
-  if (a.basePrice > b.basePrice) {
+  if (Number(a.basePrice) > Number(b.basePrice)) {
     return -1;
   }
-  if (a.basePrice === b.basePrice) {
+  if (Number(a.basePrice) === Number(b.basePrice)) {
     return 0;
   }
-  if (a.basePrice < b.basePrice) {
+  if (Number(a.basePrice) < Number(b.basePrice)) {
     return 1;
   }
 }

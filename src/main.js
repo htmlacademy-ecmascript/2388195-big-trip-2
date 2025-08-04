@@ -1,17 +1,20 @@
-import PointModel from './model/points-model.js';
+import PointModel from './model/point-model.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import TripPresenter from './presenter/trip-presenter.js';
 import NewPointButtonView from './view/new-point-button-view.js';
 import {render, RenderPosition} from './framework/render.js';
+import PointsApiService from './points-api-service.js';
+import {AUTHORIZATION, END_POINT} from './const.js';
 
 
 const tripEventsContainer = document.querySelector('.trip-events');
 const filtersContainer = document.querySelector('.trip-controls__filters');
 const siteHeaderElement = document.querySelector('.trip-main');
 
-const pointModel = new PointModel();
-pointModel.init();
+const pointModel = new PointModel({
+  pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
+});
 
 const filterModel = new FilterModel();
 const filterPresenter = new FilterPresenter({
@@ -40,7 +43,11 @@ function handleNewPointButtonClick() {
   newPointButtonView.element.disabled = true;
 }
 
-render(newPointButtonView, siteHeaderElement, RenderPosition.BEFOREEND);
-
 filterPresenter.init();
 tripPresenter.init();
+
+pointModel.init()
+  .finally(() => {
+    render(newPointButtonView, siteHeaderElement, RenderPosition.BEFOREEND);
+  });
+

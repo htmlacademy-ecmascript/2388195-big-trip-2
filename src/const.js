@@ -1,5 +1,12 @@
-import {offers} from '../src/mock/offers';
-import {destinations} from '../src/mock/destinations';
+export const AUTHORIZATION = 'Basic eo0w590ik29456a';
+export const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
+
+export const ApiMethod = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
 
 export const Mode = {
   DEFAULT: 'default',
@@ -7,14 +14,10 @@ export const Mode = {
   CREATE: 'create'
 };
 
-export const POINT_TYPES = offers.map((offer) => offer.type);
-export const DESTINATIONS_NAMES = destinations.map((destination) => destination.name);
-
 export const DEFAULT_POINT = {
-  id: 0,
   basePrice: 0,
   dateFrom: new Date().toISOString(),
-  dateTo: new Date().toISOString(),
+  dateTo: new Date(new Date().getTime() + 1000 * 60).toISOString(),
   destination: '',
   isFavorite: false,
   offers: [],
@@ -54,4 +57,5 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
