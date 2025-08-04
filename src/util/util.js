@@ -6,9 +6,12 @@ export function humanizeDate(date, dateFormat) {
 }
 
 export function getDuration(dateFrom, dateTo) {
-  const durationEvent = dayjs(dateTo).diff(dateFrom, 'm');
+  let durationEvent = dayjs(dateTo).diff(dateFrom, 'm');
 
   if (durationEvent < Minutes.IN_HOUR) {
+    if (durationEvent < Minutes.IN_TEN && durationEvent >= Minutes.IN_ZERO) {
+      durationEvent = Minutes.IN_ZERO + String(durationEvent);
+    }
     return `${durationEvent}M`;
   } else if (durationEvent >= Minutes.IN_HOUR && durationEvent < Minutes.IN_DAY) {
     let hours = dayjs(dateTo).diff(dateFrom, 'h');
