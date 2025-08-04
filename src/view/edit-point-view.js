@@ -56,8 +56,8 @@ function createPointEdit(mode, point, destinations, offers) {
         </div>
 
         <div class="event__field-group  event__field-group--time">
-          <label class="visually-hidden" for="event-start-time-${pointId}">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-${pointId}" type="text" name="event-start-time" value="${humanizeDate(dateFrom, DateFormat.DATE_TIME)}" required>
+          <label class="visually-hidden" for="event-start-time${mode === Mode.EDIT ? -pointId : ''}">From</label>
+          <input class="event__input  event__input--time" id="event-start-time${mode === Mode.EDIT ? -pointId : ''}" type="text" name="event-start-time" value="${humanizeDate(dateFrom, DateFormat.DATE_TIME)}" required>
           &mdash;
           <label class="visually-hidden" for="event-end-time-${pointId}">To</label>
           <input class="event__input  event__input--time" id="event-end-time-${pointId}" type="text" name="event-end-time" value="${humanizeDate(dateTo, DateFormat.DATE_TIME)}" required>

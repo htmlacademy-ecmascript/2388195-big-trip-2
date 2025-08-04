@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {Minutes} from '../const';
 
 export function humanizeDate(date, dateFormat) {
   return date ? dayjs(date).format(dateFormat) : '';
@@ -7,16 +8,31 @@ export function humanizeDate(date, dateFormat) {
 export function getDuration(dateFrom, dateTo) {
   const durationEvent = dayjs(dateTo).diff(dateFrom, 'm');
 
-  if (durationEvent < 60) {
+  if (durationEvent < Minutes.IN_HOUR) {
     return `${durationEvent}M`;
-  } else if (durationEvent >= 60 && durationEvent < 1440) {
-    const hours = dayjs(dateTo).diff(dateFrom, 'h');
-    const minutes = durationEvent - hours * 60;
+  } else if (durationEvent >= Minutes.IN_HOUR && durationEvent < Minutes.IN_DAY) {
+    let hours = dayjs(dateTo).diff(dateFrom, 'h');
+    if (hours < Minutes.IN_TEN && hours >= Minutes.IN_ZERO) {
+      hours = Minutes.IN_ZERO + String(hours);
+    }
+    let minutes = durationEvent - hours * Minutes.IN_HOUR;
+    if (minutes < Minutes.IN_TEN && minutes >= Minutes.IN_ZERO) {
+      minutes = Minutes.IN_ZERO + String(minutes);
+    }
     return `${hours}H ${minutes}M`;
-  } else if (durationEvent > 1440) {
-    const days = dayjs(dateTo).diff(dateFrom, 'd');
-    const hours = Math.round((durationEvent - (days * 1440)) / 60);
-    const minutes = durationEvent - days * 1440 - hours * 60;
+  } else if (durationEvent > Minutes.IN_DAY) {
+    let days = dayjs(dateTo).diff(dateFrom, 'd');
+    if (days < Minutes.IN_TEN && days >= Minutes.IN_ZERO) {
+      days = Minutes.IN_ZERO + String(days);
+    }
+    let hours = Math.floor((durationEvent - (days * Minutes.IN_DAY)) / Minutes.IN_HOUR);
+    if (hours < Minutes.IN_TEN && hours >= Minutes.IN_ZERO) {
+      hours = Minutes.IN_ZERO + String(hours);
+    }
+    let minutes = durationEvent - days * Minutes.IN_DAY - hours * Minutes.IN_HOUR;
+    if (minutes < Minutes.IN_TEN && minutes >= Minutes.IN_ZERO) {
+      minutes = Minutes.IN_ZERO + String(minutes);
+    }
     return `${days}D ${hours}H ${minutes}M`;
   }
 }
@@ -38,7 +54,7 @@ export function sortPriceDown(a, b) {
     return -1;
   }
   if (Number(a.basePrice) === Number(b.basePrice)) {
-    return 0;
+    return Minutes.IN_ZERO;
   }
   if (Number(a.basePrice) < Number(b.basePrice)) {
     return 1;
@@ -54,7 +70,7 @@ export function sortDurationDown(a, b) {
     return -1;
   }
   if (getSortDuration(a.dateFrom, a.dateTo) === getSortDuration(b.dateFrom, b.dateTo)) {
-    return 0;
+    return Minutes.IN_ZERO;
   }
   if (getSortDuration(a.dateFrom, a.dateTo) < getSortDuration(b.dateFrom, b.dateTo)) {
     return 1;
@@ -66,7 +82,7 @@ export function sortDaysUp(a, b) {
     return 1;
   }
   if (a.dateFrom === b.dateFrom) {
-    return 0;
+    return Minutes.IN_ZERO;
   }
   if (a.dateFrom < b.dateFrom) {
     return -1;

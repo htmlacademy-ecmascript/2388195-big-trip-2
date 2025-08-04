@@ -16,8 +16,8 @@ export const Mode = {
 
 export const DEFAULT_POINT = {
   basePrice: 0,
-  dateFrom: new Date().toISOString(),
-  dateTo: new Date(new Date().getTime() + 1000 * 60).toISOString(),
+  dateFrom: '',
+  dateTo: '',
   destination: '',
   isFavorite: false,
   offers: [],
@@ -58,4 +58,11 @@ export const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
+};
+
+export const Minutes = {
+  IN_HOUR: 60,
+  IN_DAY: 1440,
+  IN_TEN: 10,
+  IN_ZERO: 0,
 };
