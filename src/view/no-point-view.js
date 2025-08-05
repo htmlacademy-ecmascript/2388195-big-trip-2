@@ -14,7 +14,6 @@ function createNoPointTemplate(filterType, isError) {
     filterType = FilterType.ERROR;
   }
   const noPointTextValue = NoPointTextType[filterType].toUpperCase();
-
   return (
     `<p class="trip-events__msg">
       ${noPointTextValue}
@@ -24,7 +23,7 @@ function createNoPointTemplate(filterType, isError) {
 
 export default class NoPointView extends AbstractView {
   #filterType = null;
-  #isError = false;
+  #isError = null;
 
   constructor({filterType, isError}) {
     super();

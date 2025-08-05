@@ -27,7 +27,7 @@ export default class TripPresenter {
   #sortingView = null;
   #loadingView = new LoadingView();
   #isLoading = true;
-  #isError = false;
+  #isError = false; ///удалить?
   #pointPresenters = new Map();
   #newPointPresenter = null;
   #currentSortType = SortType.DEFAULT;
@@ -188,8 +188,7 @@ export default class TripPresenter {
       case UpdateType.ERROR:
         this.#isLoading = false;
         remove(this.#loadingView);
-        this.#isError = true;
-        this.#renderBoard();
+        this.#renderBoard(this.#isError = true);
         break;
     }
   };
@@ -199,8 +198,8 @@ export default class TripPresenter {
   //   render(this.#noPointView, this.#container);
   // }
 
-  #renderNoPointView() {
-    this.#noPointView = new NoPointView({filterType: this.#filterType});
+  #renderNoPointView(isError) {
+    this.#noPointView = new NoPointView({filterType: this.#filterType, isError});
     render(this.#noPointView, this.#container);
   }
 
@@ -222,14 +221,14 @@ export default class TripPresenter {
     }
   }
 
-  #renderBoard() {
+  #renderBoard(isError) {
     if (this.#isLoading) {
       this.#renderLoading();
       return;
     }
 
-    if (this.#isError) {
-      this.#renderNoPointView(this.#isError);
+    if (isError) {
+      this.#renderNoPointView(isError);
       return;
     }
 
