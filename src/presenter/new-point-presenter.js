@@ -6,14 +6,14 @@ export default class NewPointPresenter {
   #pointListContainer = null;
   #onPointChange = null;
   #onNewPointFormClose = null;
-
+  #onModelChange = null;
   #editPointViewComponent = null;
 
-  constructor({pointListContainer, onPointChange, onNewPointFormClose}) {
+  constructor({pointListContainer, onPointChange, onNewPointFormClose, onModelChange}) {
     this.#pointListContainer = pointListContainer;
     this.#onPointChange = onPointChange;
     this.#onNewPointFormClose = onNewPointFormClose;
-
+    this.#onModelChange = onModelChange;
     // this.#pointModel.addObserver(this.#onModelChange);
     // this.#filterModel.addObserver(this.#onModelChange);
   }
@@ -74,12 +74,14 @@ export default class NewPointPresenter {
 
   #onDeleteClick = () => {
     this.destroy();
+    this.#onModelChange(UpdateType.MAJOR);
   };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this.destroy();
+      this.#onModelChange(UpdateType.MAJOR);
     }
   };
 }

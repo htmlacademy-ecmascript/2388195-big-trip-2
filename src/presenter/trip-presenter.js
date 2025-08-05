@@ -45,7 +45,8 @@ export default class TripPresenter {
     this.#newPointPresenter = new NewPointPresenter({
       pointListContainer: this.#listPointsView.element,
       onPointChange: this.#onPointChange,
-      onNewPointFormClose: onNewPointFormClose
+      onNewPointFormClose: onNewPointFormClose,
+      onModelChange: this.#onModelChange
     });
 
     this.#pointModel.addObserver(this.#onModelChange);
