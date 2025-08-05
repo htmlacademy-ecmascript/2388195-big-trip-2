@@ -81,7 +81,7 @@ export default class PointPresenter{
 
 
   setSaving() {
-    if (this.#mode === Mode.EDITING) {
+    if (this.#mode === Mode.EDIT) {
       this.#editPointViewComponent.updateElement({
         isDisabled: true,
         isSaving: true,
@@ -90,7 +90,7 @@ export default class PointPresenter{
   }
 
   setDeleting() {
-    if (this.#mode === Mode.EDITING) {
+    if (this.#mode === Mode.EDIT) {
       this.#editPointViewComponent.updateElement({
         isDisabled: true,
         isDeleting: true,

@@ -13,6 +13,9 @@ export default class NewPointPresenter {
     this.#pointListContainer = pointListContainer;
     this.#onPointChange = onPointChange;
     this.#onNewPointFormClose = onNewPointFormClose;
+
+    // this.#pointModel.addObserver(this.#onModelChange);
+    // this.#filterModel.addObserver(this.#onModelChange);
   }
 
   init({destinations, offers}) {
@@ -32,9 +35,9 @@ export default class NewPointPresenter {
   }
 
   destroy() {
-    if (this.#editPointViewComponent === null) {
-      return;
-    }
+    // if (this.#editPointViewComponent === null) {
+    //   return;
+    // }
 
     this.#onNewPointFormClose();
     remove(this.#editPointViewComponent);
@@ -64,7 +67,7 @@ export default class NewPointPresenter {
   #onFormSubmit = (point) => {
     this.#onPointChange(
       UserAction.ADD_POINT,
-      UpdateType.MAJOR, //MINOR,
+      UpdateType.MAJOR,
       point,
     );
   };

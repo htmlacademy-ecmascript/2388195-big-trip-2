@@ -2,13 +2,17 @@ import AbstractView from '../framework/view/abstract-view.js';
 import {FilterType} from '../const.js';
 
 const NoPointTextType = {
-  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.EVERYTHING]: 'click New Event to create your first point',
   [FilterType.FUTURE]: 'there are no future events now',
   [FilterType.PRESENT]: 'there are no present events now',
   [FilterType.PAST]: 'there are no past events now',
+  [FilterType.ERROR]: 'failed to load latest route information',
 };
 
-function createNoPointTemplate(filterType) {
+function createNoPointTemplate(filterType, isError) {
+  if (!isError) {
+    filterType = FilterType.ERROR;
+  }
   const noPointTextValue = NoPointTextType[filterType].toUpperCase();
 
   return (
@@ -20,13 +24,16 @@ function createNoPointTemplate(filterType) {
 
 export default class NoPointView extends AbstractView {
   #filterType = null;
+  #isError = false;
 
-  constructor({filterType}) {
+  constructor({filterType, isError}) {
     super();
     this.#filterType = filterType;
+    this.#isError = isError;
+
   }
 
   get template() {
-    return createNoPointTemplate(this.#filterType);
+    return createNoPointTemplate(this.#filterType, this.#isError);
   }
 }

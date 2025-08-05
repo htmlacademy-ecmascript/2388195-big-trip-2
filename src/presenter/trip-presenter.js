@@ -27,6 +27,7 @@ export default class TripPresenter {
   #sortingView = null;
   #loadingView = new LoadingView();
   #isLoading = true;
+  #isError = false;
   #pointPresenters = new Map();
   #newPointPresenter = null;
   #currentSortType = SortType.DEFAULT;
@@ -52,9 +53,9 @@ export default class TripPresenter {
   }
 
   get points() {
-    this.#filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter; //filterType.Everything
     const points = this.#pointModel.points;
-    const filteredPoints = filter[this.#filterType](points);
+    const filteredPoints = filter[this.#filterType](points);//применяется фильтр
 
     switch (this.#currentSortType) {
       case SortType.PRICE:
@@ -83,6 +84,12 @@ export default class TripPresenter {
   createPoint() {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+    if (this.#noPointView) {
+      remove(this.#noPointView);
+      render(this.#listPointsView, this.#container);
+    }
+
     this.#newPointPresenter.init({destinations: this.destinations, offers: this.offers});
   }
 
@@ -159,10 +166,10 @@ export default class TripPresenter {
     this.#uiBlocker.unblock();
   };
 
-  #onModelChange = (updateType, data) => {
+  #onModelChange = (updateType, point) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#pointPresenters.get(data.id).init(data);
+        this.#pointPresenters.get(point.id).init(point);
         break;
       case UpdateType.MINOR:
         this.#clearBoard();
@@ -177,8 +184,19 @@ export default class TripPresenter {
         remove(this.#loadingView);
         this.#renderBoard();
         break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingView);
+        this.#isError = true;
+        this.#renderBoard();
+        break;
     }
   };
+
+  // #renderErrorMessage() {
+  //   this.#noPointView = new NoPointView({filterType: FilterType.ERROR});
+  //   render(this.#noPointView, this.#container);
+  // }
 
   #renderNoPointView() {
     this.#noPointView = new NoPointView({filterType: this.#filterType});
@@ -206,6 +224,11 @@ export default class TripPresenter {
   #renderBoard() {
     if (this.#isLoading) {
       this.#renderLoading();
+      return;
+    }
+
+    if (this.#isError) {
+      this.#renderNoPointView(this.#isError);
       return;
     }
 
