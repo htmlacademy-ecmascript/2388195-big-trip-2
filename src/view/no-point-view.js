@@ -10,7 +10,7 @@ const NoPointTextType = {
 };
 
 function createNoPointTemplate(filterType, isError) {
-  if (!isError) {
+  if (isError) {
     filterType = FilterType.ERROR;
   }
   const noPointTextValue = NoPointTextType[filterType].toUpperCase();
