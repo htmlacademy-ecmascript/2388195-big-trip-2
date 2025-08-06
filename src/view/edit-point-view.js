@@ -3,12 +3,10 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {Mode, DEFAULT_POINT, DateFormat} from '../const.js';
 import {humanizeDate} from '../util/util.js';
 import flatpickr from 'flatpickr';
-
 import 'flatpickr/dist/flatpickr.min.css';
 
 const upFirstLetter = (word) => `${word[0].toUpperCase()}${word.slice(1)}`;
 const formatOfferTitle = (title) => title.split(' ').join('-').toLowerCase();
-
 
 function createPointEdit(mode, point, destinations, offers) {
   const {basePrice, dateFrom, dateTo, type, isDisabled, isSaving, isDeleting} = point;
@@ -184,9 +182,6 @@ export default class EditPointView extends AbstractStatefulView {
     }
 
     this.element.querySelector('.event__input--price')
-      .addEventListener('focus', this.#priceFocusHandler);
-
-    this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
 
     this.element.querySelector('.event__available-offers')
@@ -202,7 +197,6 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     this._setState({isSaving: true, isDisabled: true});
     this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
-
   };
 
   #typeChangeHandler = (evt) => {
@@ -215,12 +209,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.updateElement({destination: idDestination});
   };
 
-  #priceFocusHandler = (evt) => {
-    evt.target.value = '';
-  };
-
   #priceChangeHandler = (evt) => {
-    const noNullPrice = evt.target.value.replace(/^0+/, '');
+    const noNullPrice = he.encode(evt.target.value.replace(/^0+/, ''));
     this._setState({basePrice: noNullPrice});
   };
 

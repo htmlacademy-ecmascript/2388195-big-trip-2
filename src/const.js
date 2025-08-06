@@ -1,6 +1,11 @@
 export const AUTHORIZATION = 'Basic eo0w590ik29589a';
 export const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
+export const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 export const ApiMethod = {
   GET: 'GET',
   PUT: 'PUT',

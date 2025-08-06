@@ -24,7 +24,6 @@ export default class NoPointView extends AbstractView {
   constructor({filterType}) {
     super();
     this.#filterType = filterType;
-
   }
 
   get template() {
