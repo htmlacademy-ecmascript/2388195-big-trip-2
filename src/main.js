@@ -43,7 +43,7 @@ function handleNewPointButtonClick() {
   newPointButtonView.element.disabled = true;
 }
 
-filterPresenter.init(); //filterType.Everything
+filterPresenter.init();
 tripPresenter.init();
 
 pointModel.init()

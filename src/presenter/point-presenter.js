@@ -150,7 +150,7 @@ export default class PointPresenter{
   #onFormSubmit = (point) => {
     this.#onPointChange(
       UserAction.UPDATE_POINT,
-      UpdateType.MINOR,
+      UpdateType.MAJOR,
       point);
   };
 
@@ -162,7 +162,7 @@ export default class PointPresenter{
   #onDeleteClick = (point) => {
     this.#onPointChange(
       UserAction.DELETE_POINT,
-      UpdateType.MINOR,
+      UpdateType.MAJOR,
       point);
   };
 }

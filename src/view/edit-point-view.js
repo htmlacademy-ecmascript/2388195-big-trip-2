@@ -25,19 +25,19 @@ function createPointEdit(mode, point, destinations, offers) {
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-${mode === Mode.EDIT ? -pointId : ''}">
+          <label class="event__type  event__type-btn" for="event-type-toggle-${mode === Mode.EDIT ? pointId : ''}">
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${mode === Mode.EDIT ? -pointId : ''}" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${mode === Mode.EDIT ? pointId : ''}" type="checkbox">
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
               ${pointTypes?.map((pointType) => (
     `<div class="event__type-item">
-        <input id="event-type-${pointType}-${mode === Mode.EDIT ? -pointId : ''}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${pointType === type ? 'checked' : ''} >
-        <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-${mode === Mode.EDIT ? -pointId : ''}">${upFirstLetter(pointType)}</label>
+        <input id="event-type-${pointType}-${mode === Mode.EDIT ? pointId : ''}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${pointType === type ? 'checked' : ''} >
+        <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-${mode === Mode.EDIT ? pointId : ''}">${upFirstLetter(pointType)}</label>
       </div>`
   )).join('')}
             </fieldset>
@@ -45,30 +45,30 @@ function createPointEdit(mode, point, destinations, offers) {
         </div>
 
         <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-${mode === Mode.EDIT ? -pointId : ''}">
+          <label class="event__label  event__type-output" for="event-destination-${mode === Mode.EDIT ? pointId : ''}">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${mode === Mode.EDIT ? -pointId : ''}" type="text" name="event-destination"
-          value="${he.encode(name ? name : '')}" list="destination-list-${mode === Mode.EDIT ? -pointId : ''}" required>
-          <datalist id="destination-list-${mode === Mode.EDIT ? -pointId : ''}">
+          <input class="event__input  event__input--destination" id="event-destination-${mode === Mode.EDIT ? pointId : ''}" type="text" name="event-destination"
+          value="${he.encode(name ? name : '')}" list="destination-list-${mode === Mode.EDIT ? pointId : ''}" required>
+          <datalist id="destination-list-${mode === Mode.EDIT ? pointId : ''}">
             ${destinationsNames?.map((destinationName) => `<option value="${destinationName}"></option>`).join('')}
           </datalist>
         </div>
 
         <div class="event__field-group  event__field-group--time">
-          <label class="visually-hidden" for="event-start-time${mode === Mode.EDIT ? -pointId : ''}">From</label>
-          <input class="event__input  event__input--time" id="event-start-time${mode === Mode.EDIT ? -pointId : ''}" type="text" name="event-start-time" value="${humanizeDate(dateFrom, DateFormat.DATE_TIME)}" required>
+          <label class="visually-hidden" for="event-start-time-${mode === Mode.EDIT ? pointId : ''}">From</label>
+          <input class="event__input  event__input--time" id="event-start-time-${mode === Mode.EDIT ? pointId : ''}" type="text" name="event-start-time" value="${humanizeDate(dateFrom, DateFormat.DATE_TIME)}" required>
           &mdash;
-          <label class="visually-hidden" for="event-end-time-${mode === Mode.EDIT ? -pointId : ''}">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-${mode === Mode.EDIT ? -pointId : ''}" type="text" name="event-end-time" value="${humanizeDate(dateTo, DateFormat.DATE_TIME)}" required>
+          <label class="visually-hidden" for="event-end-time-${mode === Mode.EDIT ? pointId : ''}">To</label>
+          <input class="event__input  event__input--time" id="event-end-time-${mode === Mode.EDIT ? pointId : ''}" type="text" name="event-end-time" value="${humanizeDate(dateTo, DateFormat.DATE_TIME)}" required>
         </div>
 
         <div class="event__field-group  event__field-group--price">
-          <label class="event__label" for="event-price-${mode === Mode.EDIT ? -pointId : ''}">
+          <label class="event__label" for="event-price-${mode === Mode.EDIT ? pointId : ''}">
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${mode === Mode.EDIT ? -pointId : ''}" type="number" name="event-price" value="${basePrice}" min="1" required>
+          <input class="event__input  event__input--price" id="event-price-${mode === Mode.EDIT ? pointId : ''}" type="number" name="event-price" value="${basePrice}" min="1" required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
@@ -231,7 +231,7 @@ export default class EditPointView extends AbstractStatefulView {
     } else {
       checkedOffers.delete(evt.target.dataset.offerId);
     }
-    this._setState({offers: [...checkedOffers]});
+    this.updateElement({offers: [...checkedOffers]});
   };
 
   #dateFromCloseHandler = ([userDate]) => {

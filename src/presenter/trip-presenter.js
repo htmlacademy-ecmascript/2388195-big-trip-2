@@ -3,6 +3,7 @@ import TripInfoView from '../view/trip-info-view.js';
 import SortingView from '../view/sorting-view.js';
 import ListPointsView from '../view/list-points-view.js';
 import {RenderPosition, render, remove} from '../framework/render.js';
+import ErrorView from '../view/error-view.js';
 import NoPointView from '../view/no-point-view.js';
 import {filter} from '../util/filter.js';
 import {sortPriceDown, sortDurationDown, sortDaysUp} from '../util/util.js';
@@ -22,12 +23,12 @@ export default class TripPresenter {
   #filterModel = null;
 
   #listPointsView = new ListPointsView();
-  #tripInfoView = new TripInfoView();
+  #tripInfoView = null;
+  #errorView = null;
   #noPointView = null;
   #sortingView = null;
   #loadingView = new LoadingView();
   #isLoading = true;
-  #isError = false; ///удалить?
   #pointPresenters = new Map();
   #newPointPresenter = null;
   #currentSortType = SortType.DEFAULT;
@@ -54,9 +55,9 @@ export default class TripPresenter {
   }
 
   get points() {
-    this.#filterType = this.#filterModel.filter; //filterType.Everything
+    this.#filterType = this.#filterModel.filter;
     const points = this.#pointModel.points;
-    const filteredPoints = filter[this.#filterType](points);//применяется фильтр
+    const filteredPoints = filter[this.#filterType](points);
 
     switch (this.#currentSortType) {
       case SortType.PRICE:
@@ -77,8 +78,6 @@ export default class TripPresenter {
   }
 
   init() {
-    this.#renderTripInfoView();
-
     this.#renderBoard();
   }
 
@@ -100,6 +99,11 @@ export default class TripPresenter {
 
   #renderTripInfoView() {
     const tripMainContainer = document.querySelector('.trip-main');
+    this.#tripInfoView = new TripInfoView({
+      points: this.points,
+      destinations: this.destinations,
+      offers: this.offers
+    });
     render(this.#tripInfoView, tripMainContainer, RenderPosition.AFTERBEGIN);
   }
 
@@ -177,29 +181,35 @@ export default class TripPresenter {
         this.#renderBoard();
         break;
       case UpdateType.MAJOR:
+        remove(this.#errorView);
         this.#clearBoard({resetSortType: true});
         this.#renderBoard();
+        // remove(this.#tripInfoView);
+        // this.#renderTripInfoView();
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingView);
+        remove(this.#errorView);
+        // remove(this.#tripInfoView);
+        // this.#renderTripInfoView();
         this.#renderBoard();
         break;
       case UpdateType.ERROR:
         this.#isLoading = false;
         remove(this.#loadingView);
-        this.#renderBoard(this.#isError = true);
+        this.#renderErrorView();
         break;
     }
   };
 
-  // #renderErrorMessage() {
-  //   this.#noPointView = new NoPointView({filterType: FilterType.ERROR});
-  //   render(this.#noPointView, this.#container);
-  // }
+  #renderErrorView() {
+    this.#errorView = new ErrorView();
+    render(this.#errorView , this.#container);
+  }
 
-  #renderNoPointView(isError) {
-    this.#noPointView = new NoPointView({filterType: this.#filterType, isError});
+  #renderNoPointView() {
+    this.#noPointView = new NoPointView({filterType: this.#filterType});
     render(this.#noPointView, this.#container);
   }
 
@@ -221,14 +231,9 @@ export default class TripPresenter {
     }
   }
 
-  #renderBoard(isError) {
+  #renderBoard() {
     if (this.#isLoading) {
       this.#renderLoading();
-      return;
-    }
-
-    if (isError) {
-      this.#renderNoPointView(isError);
       return;
     }
 

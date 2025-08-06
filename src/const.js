@@ -27,6 +27,7 @@ export const DEFAULT_POINT = {
 export const DateFormat = {
   DATE_TIME: 'DD/MM/YY HH:mm',
   MONTH_DAY: 'MMM DD',
+  DAY_MONTH: 'DD MMM',
   YEAR_MONTH_DAY: 'YYYY-MM-DD',
   TIME: 'HH:mm',
   STANDART: 'YYYY-MM-DDTHH:mm',
@@ -64,6 +65,4 @@ export const UpdateType = {
 export const Minutes = {
   IN_HOUR: 60,
   IN_DAY: 1440,
-  IN_TEN: 10,
-  IN_ZERO: 0,
 };
