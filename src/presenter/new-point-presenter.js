@@ -14,8 +14,6 @@ export default class NewPointPresenter {
     this.#onPointChange = onPointChange;
     this.#onNewPointFormClose = onNewPointFormClose;
     this.#onModelChange = onModelChange;
-    // this.#pointModel.addObserver(this.#onModelChange);
-    // this.#filterModel.addObserver(this.#onModelChange);
   }
 
   init({destinations, offers}) {
@@ -35,9 +33,9 @@ export default class NewPointPresenter {
   }
 
   destroy() {
-    // if (this.#editPointViewComponent === null) {
-    //   return;
-    // }
+    if (this.#editPointViewComponent === null) {
+      return;
+    }
 
     this.#onNewPointFormClose();
     remove(this.#editPointViewComponent);

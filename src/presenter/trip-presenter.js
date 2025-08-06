@@ -99,8 +99,11 @@ export default class TripPresenter {
 
   #renderTripInfoView() {
     const tripMainContainer = document.querySelector('.trip-main');
+    if (this.points.length === 0) {
+      return;
+    }
     this.#tripInfoView = new TripInfoView({
-      points: this.points,
+      points: [...this.points].sort(sortDaysUp),
       destinations: this.destinations,
       offers: this.offers
     });
@@ -180,19 +183,24 @@ export default class TripPresenter {
         this.#clearBoard();
         this.#renderBoard();
         break;
+      case UpdateType.FILTER:
+        remove(this.#errorView);
+        this.#clearBoard({resetSortType: true});
+        this.#renderBoard();
+        break;
       case UpdateType.MAJOR:
         remove(this.#errorView);
         this.#clearBoard({resetSortType: true});
         this.#renderBoard();
-        // remove(this.#tripInfoView);
-        // this.#renderTripInfoView();
+        remove(this.#tripInfoView);
+        this.#renderTripInfoView();
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingView);
         remove(this.#errorView);
-        // remove(this.#tripInfoView);
-        // this.#renderTripInfoView();
+        remove(this.#tripInfoView);
+        this.#renderTripInfoView();
         this.#renderBoard();
         break;
       case UpdateType.ERROR:
