@@ -224,7 +224,6 @@ export default class TripPresenter {
         this.#renderBoard();
         break;
       case UpdateType.FILTER:
-        remove(this.#errorView);
         this.#clearBoard({resetSortType: true});
         this.#renderBoard();
         break;

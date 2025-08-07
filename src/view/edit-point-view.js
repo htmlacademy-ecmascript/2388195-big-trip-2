@@ -195,7 +195,6 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._setState({isSaving: true, isDisabled: true});
     this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
@@ -236,7 +235,6 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formDeleteClickHandler = (evt) => {
     evt.preventDefault();
-    this._setState({isDeleting: true, isDisabled: true});
     this.#onDeleteClick(EditPointView.parseStateToPoint(this._state));
   };
 

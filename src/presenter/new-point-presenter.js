@@ -55,7 +55,6 @@ export default class NewPointPresenter {
       this.#editPointView.updateElement({
         isDisabled: false,
         isSaving: false,
-        isDeleting: false,
       });
     };
 
@@ -71,15 +70,13 @@ export default class NewPointPresenter {
   };
 
   #onDeleteClick = () => {
-    this.destroy();
-    this.#onModelChange(UpdateType.MAJOR);
+    this.#onModelChange(UpdateType.MINOR);
   };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.destroy();
-      this.#onModelChange(UpdateType.MAJOR);
+      this.#onModelChange(UpdateType.MINOR);
     }
   };
 }
