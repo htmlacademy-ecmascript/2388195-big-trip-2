@@ -1,5 +1,10 @@
-export const AUTHORIZATION = 'Basic eo0w590ik29456a';
+export const AUTHORIZATION = 'Basic eo0w590ik29589a';
 export const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
+
+export const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export const ApiMethod = {
   GET: 'GET',
@@ -16,8 +21,8 @@ export const Mode = {
 
 export const DEFAULT_POINT = {
   basePrice: 0,
-  dateFrom: new Date().toISOString(),
-  dateTo: new Date(new Date().getTime() + 1000 * 60).toISOString(),
+  dateFrom: '',
+  dateTo: '',
   destination: '',
   isFavorite: false,
   offers: [],
@@ -27,6 +32,7 @@ export const DEFAULT_POINT = {
 export const DateFormat = {
   DATE_TIME: 'DD/MM/YY HH:mm',
   MONTH_DAY: 'MMM DD',
+  DAY_MONTH: 'DD MMM',
   YEAR_MONTH_DAY: 'YYYY-MM-DD',
   TIME: 'HH:mm',
   STANDART: 'YYYY-MM-DDTHH:mm',
@@ -58,4 +64,11 @@ export const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
+  FILTER: 'FILTER',
+  ERROR: 'ERROR'
+};
+
+export const Minutes = {
+  IN_HOUR: 60,
+  IN_DAY: 1440,
 };
