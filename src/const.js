@@ -72,3 +72,19 @@ export const Minutes = {
   IN_HOUR: 60,
   IN_DAY: 1440,
 };
+
+export const Duration = {
+  TEN: 10,
+  ZERO: 0,
+};
+
+export const Position = {
+  START: -1,
+  EQUAL: 0,
+  END: 1
+};
+export const PointsLength = {
+  ONE: 1,
+  TWO: 2,
+  THREE: 3,
+};

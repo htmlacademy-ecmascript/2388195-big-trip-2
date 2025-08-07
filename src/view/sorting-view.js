@@ -18,9 +18,9 @@ function createSorting(sorts, currentSortType) {
   </form>`;
 }
 export default class SortingView extends AbstractView {
-  #onSortingTypeChange = null;
   #sorts = [];
   #currentSortType = null;
+  #onSortingTypeChange = null;
 
   constructor({sorts, currentSortType, onSortingTypeChange}) {
     super();
