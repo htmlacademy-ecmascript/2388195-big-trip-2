@@ -1,26 +1,26 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {humanizeDate} from '../util/util.js';
-import {DateFormat} from '../const.js';
+import {DateFormat, PointsLength} from '../const.js';
 
 function createDestinations(points, destinations) {
   const firstDestination = destinations.find((destination) => destination.id === points[0]?.destination)?.name;
   const secondDestination = destinations.find((destination) => destination.id === points[1]?.destination)?.name;
   const lastDestination = destinations.find((destination) => destination.id === points[points.length - 1]?.destination)?.name;
 
-  const oneDestination = firstDestination;
-  const twoDestinations = `${firstDestination} - ${lastDestination}`;
-  const threeDestinations = `${firstDestination} - ${secondDestination} - ${lastDestination}`;
-  const moreDestinations = `${firstDestination} - ... - ${lastDestination}`;
+  const oneDestinationTitle = firstDestination;
+  const twoDestinationsTitle = `${firstDestination} - ${lastDestination}`;
+  const threeDestinationsTitle = `${firstDestination} - ${secondDestination} - ${lastDestination}`;
+  const moreDestinationsTitle = `${firstDestination} - ... - ${lastDestination}`;
 
   switch (points.length) {
-    case 1:
-      return oneDestination;
-    case 2:
-      return twoDestinations;
-    case 3:
-      return threeDestinations;
+    case PointsLength.ONE:
+      return oneDestinationTitle;
+    case PointsLength.TWO:
+      return twoDestinationsTitle;
+    case PointsLength.THREE:
+      return threeDestinationsTitle;
     default:
-      return moreDestinations;
+      return moreDestinationsTitle;
   }
 }
 
@@ -34,25 +34,25 @@ function createEndDate(points) {
 
 function createTotalCost(points, offers) {
   const costsBasePrice = points.map((point) => point.basePrice).reduce((currentTotal, currentValue) => currentTotal + currentValue);
-  const arrayPointsOffers = points.map((point) => point.offers).flat();
-  const arrayOffersInOffers = offers.map((offer) => offer.offers).flat();
-  const countId = arrayPointsOffers.reduce((acc, id) => {
-    acc[id] = (acc[id] || 0) + 1;
-    return acc;
+  const pointsOffers = points.map((point) => point.offers).flat();
+  const offersInOffers = offers.map((offer) => offer.offers).flat();
+  const countId = pointsOffers.reduce((count, id) => {
+    count[id] = (count[id] || 0) + 1;
+    return count;
   }, {});
 
-  const costsOffersPrice = arrayOffersInOffers.reduce((sum, item) => {
-    if (countId[item.id]) {
-      sum += item.price * countId[item.id];
+  const costsOffersPrice = offersInOffers.reduce((currentTotal, offer) => {
+    if (countId[offer.id]) {
+      currentTotal += offer.price * countId[offer.id];
     }
-    return sum;
+    return currentTotal;
   }, 0);
 
   return costsBasePrice + costsOffersPrice;
 }
 
 function createTripInfo(points, destinations, offers) {
-  if (points.length <= 0) {
+  if (points.length === 0) {
     return;
   }
 

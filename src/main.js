@@ -7,10 +7,9 @@ import {render, RenderPosition} from './framework/render.js';
 import PointsApiService from './points-api-service.js';
 import {AUTHORIZATION, END_POINT} from './const.js';
 
-
 const tripEventsContainer = document.querySelector('.trip-events');
-const filtersContainer = document.querySelector('.trip-controls__filters');
-const siteHeaderElement = document.querySelector('.trip-main');
+const filterContainer = document.querySelector('.trip-controls__filters');
+const tripMainContainer = document.querySelector('.trip-main');
 
 const pointModel = new PointModel({
   pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
@@ -18,29 +17,30 @@ const pointModel = new PointModel({
 
 const filterModel = new FilterModel();
 const filterPresenter = new FilterPresenter({
-  filterContainer: filtersContainer,
+  filterContainer,
   filterModel,
   pointModel
 });
 
 const tripPresenter = new TripPresenter({
-  container: tripEventsContainer,
+  tripEventsContainer,
+  tripMainContainer,
   pointModel,
   filterModel,
   onNewPointFormClose: onNewPointFormClose
 });
 
-const newPointButtonView = new NewPointButtonView({
-  onClick: handleNewPointButtonClick
+const newPointButtonComponent = new NewPointButtonView({
+  onClick: onNewPointButtonClick
 });
 
 function onNewPointFormClose() {
-  newPointButtonView.element.disabled = false;
+  newPointButtonComponent.element.disabled = false;
 }
 
-function handleNewPointButtonClick() {
+function onNewPointButtonClick() {
   tripPresenter.createPoint();
-  newPointButtonView.element.disabled = true;
+  newPointButtonComponent.element.disabled = true;
 }
 
 filterPresenter.init();
@@ -48,6 +48,5 @@ tripPresenter.init();
 
 pointModel.init()
   .finally(() => {
-    render(newPointButtonView, siteHeaderElement, RenderPosition.BEFOREEND);
+    render(newPointButtonComponent, tripMainContainer, RenderPosition.BEFOREEND);
   });
-

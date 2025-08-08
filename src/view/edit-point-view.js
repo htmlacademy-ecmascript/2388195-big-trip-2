@@ -193,6 +193,38 @@ export default class EditPointView extends AbstractStatefulView {
     this.#setDatepicker();
   }
 
+  #setDatepicker() {
+    const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');
+    const commonConfig = {
+      dateFormat: 'd/m/y H:i',
+      'time_24hr': true,
+      locale: {
+        firstDayOfWeek: 1
+      },
+      enableTime: true,
+    };
+
+    this.#datepickerFrom = flatpickr(
+      dateFromElement,
+      {
+        ...commonConfig,
+        defaultDate: this._state.dateFrom,
+        onClose: this.#dateFromCloseHandler,
+        maxDate:  this._state.dateTo,
+      },
+    );
+
+    this.#datepickerTo = flatpickr(
+      dateToElement,
+      {
+        ...commonConfig,
+        defaultDate: this._state.dateTo,
+        onClose: this.#dateToCloseHandler,
+        minDate: this._state.dateFrom,
+      },
+    );
+  }
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#onFormSubmit(EditPointView.parseStateToPoint(this._state));
@@ -237,38 +269,6 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     this.#onDeleteClick(EditPointView.parseStateToPoint(this._state));
   };
-
-  #setDatepicker() {
-    const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');
-    const commonConfig = {
-      dateFormat: 'd/m/y H:i',
-      'time_24hr': true,
-      locale: {
-        firstDayOfWeek: 1
-      },
-      enableTime: true,
-    };
-
-    this.#datepickerFrom = flatpickr(
-      dateFromElement,
-      {
-        ...commonConfig,
-        defaultDate: this._state.dateFrom,
-        onClose: this.#dateFromCloseHandler,
-        maxDate:  this._state.dateTo,
-      },
-    );
-
-    this.#datepickerTo = flatpickr(
-      dateToElement,
-      {
-        ...commonConfig,
-        defaultDate: this._state.dateTo,
-        onClose: this.#dateToCloseHandler,
-        minDate: this._state.dateFrom,
-      },
-    );
-  }
 
   static parsePointToState(point) {
     return {...point,

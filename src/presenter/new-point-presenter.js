@@ -3,48 +3,48 @@ import EditPointView from '../view/edit-point-view.js';
 import {UserAction, UpdateType, Mode} from '../const.js';
 
 export default class NewPointPresenter {
-  #pointListContainer = null;
+  #listPointsContainer = null;
   #onPointChange = null;
   #onNewPointFormClose = null;
   #onModelChange = null;
-  #editPointView = null;
+  #editPointComponent = null;
 
-  constructor({pointListContainer, onPointChange, onNewPointFormClose, onModelChange}) {
-    this.#pointListContainer = pointListContainer;
+  constructor({listPointsContainer, onPointChange, onNewPointFormClose, onModelChange}) {
+    this.#listPointsContainer = listPointsContainer;
     this.#onPointChange = onPointChange;
     this.#onNewPointFormClose = onNewPointFormClose;
     this.#onModelChange = onModelChange;
   }
 
   init({destinations, offers}) {
-    if (this.#editPointView !== null) {
+    if (this.#editPointComponent !== null) {
       return;
     }
 
-    this.#editPointView = new EditPointView({
+    this.#editPointComponent = new EditPointView({
       mode: Mode.CREATE,
       destinations,
       offers,
       onFormSubmit: this.#onFormSubmit,
       onDeleteClick: this.#onDeleteClick
     });
-    render(this.#editPointView, this.#pointListContainer, RenderPosition.AFTERBEGIN);
-    document.addEventListener('keydown', this.#escKeyDownHandler);
+    render(this.#editPointComponent, this.#listPointsContainer, RenderPosition.AFTERBEGIN);
+    document.addEventListener('keydown', this.#onEscKeyDown);
   }
 
   destroy() {
-    if (this.#editPointView === null) {
+    if (this.#editPointComponent === null) {
       return;
     }
 
     this.#onNewPointFormClose();
-    remove(this.#editPointView);
-    this.#editPointView = null;
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
+    remove(this.#editPointComponent);
+    this.#editPointComponent = null;
+    document.removeEventListener('keydown', this.#onEscKeyDown);
   }
 
   setSaving() {
-    this.#editPointView.updateElement({
+    this.#editPointComponent.updateElement({
       isDisabled: true,
       isSaving: true,
     });
@@ -52,13 +52,13 @@ export default class NewPointPresenter {
 
   setAborting() {
     const resetFormState = () => {
-      this.#editPointView.updateElement({
+      this.#editPointComponent.updateElement({
         isDisabled: false,
         isSaving: false,
       });
     };
 
-    this.#editPointView.shake(resetFormState);
+    this.#editPointComponent.shake(resetFormState);
   }
 
   #onFormSubmit = (point) => {
@@ -73,7 +73,7 @@ export default class NewPointPresenter {
     this.#onModelChange(UpdateType.MINOR);
   };
 
-  #escKeyDownHandler = (evt) => {
+  #onEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this.#onModelChange(UpdateType.MINOR);
