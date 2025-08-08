@@ -29,7 +29,7 @@ export default class NewPointPresenter {
       onDeleteClick: this.#onDeleteClick
     });
     render(this.#editPointComponent, this.#listPointsContainer, RenderPosition.AFTERBEGIN);
-    document.addEventListener('keydown', this.#onEscKeyDown);
+    document.addEventListener('keydown', this.#EscKeyDownHandler);
   }
 
   destroy() {
@@ -40,7 +40,7 @@ export default class NewPointPresenter {
     this.#onNewPointFormClose();
     remove(this.#editPointComponent);
     this.#editPointComponent = null;
-    document.removeEventListener('keydown', this.#onEscKeyDown);
+    document.removeEventListener('keydown', this.#EscKeyDownHandler);
   }
 
   setSaving() {
@@ -73,7 +73,7 @@ export default class NewPointPresenter {
     this.#onModelChange(UpdateType.MINOR);
   };
 
-  #onEscKeyDown = (evt) => {
+  #EscKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this.#onModelChange(UpdateType.MINOR);
