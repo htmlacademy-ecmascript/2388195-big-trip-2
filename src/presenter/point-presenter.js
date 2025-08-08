@@ -114,18 +114,18 @@ export default class PointPresenter{
 
   #replaceCardToForm() {
     replace(this.#editPointComponent, this.#pointComponent);
-    document.addEventListener('keydown', this.#onEscKeyDown);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#onModeChange();
     this.#mode = Mode.EDIT;
   }
 
   #replaceFormToCard() {
     replace(this.#pointComponent, this.#editPointComponent);
-    document.removeEventListener('keydown', this.#onEscKeyDown);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
   }
 
-  #onEscKeyDown = (evt) => {
+  #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
       this.#editPointComponent.reset(this.#point);
